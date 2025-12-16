@@ -45,21 +45,26 @@
         
         <div id="scheduleView" class="animate-fade-in"></div>
         <div id="restaurantView" class="hidden animate-fade-in"></div>
+        <div id="asianRestaurantView" class="hidden animate-fade-in"></div>
         <div id="supermarketView" class="hidden animate-fade-in"></div>
 
     </main>
 
     <!-- Bottom Navigation -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center py-2 pb-safe z-50 shadow-lg text-xs">
-        <button onclick="switchView('schedule')" class="flex flex-col items-center w-1/3 py-2 nav-active" id="nav-schedule">
+        <button id="nav-schedule" class="flex flex-col items-center w-1/4 py-2 nav-active">
             <i class="fas fa-calendar-alt text-xl mb-1"></i>
             <span>每日行程</span>
         </button>
-        <button onclick="switchView('restaurant')" class="flex flex-col items-center w-1/3 py-2 nav-inactive" id="nav-restaurant">
+        <button id="nav-restaurant" class="flex flex-col items-center w-1/4 py-2 nav-inactive">
             <i class="fas fa-utensils text-xl mb-1"></i>
             <span>當日美食</span>
         </button>
-        <button onclick="switchView('supermarket')" class="flex flex-col items-center w-1/3 py-2 nav-inactive" id="nav-supermarket">
+        <button id="nav-asianFood" class="flex flex-col items-center w-1/4 py-2 nav-inactive">
+            <i class="fas fa-globe-asia text-xl mb-1"></i>
+            <span>亞洲餐廳</span>
+        </button>
+        <button id="nav-supermarket" class="flex flex-col items-center w-1/4 py-2 nav-inactive">
             <i class="fas fa-shopping-basket text-xl mb-1"></i>
             <span>亞洲超市</span>
         </button>
@@ -71,321 +76,487 @@
     </a>
 
     <script>
-        // ---------------- Data ----------------
-        const itinerary = [
-            {
-                date: "12/25", day: "週四", city: "Kraków",
-                events: [
-                    { time: "16:41", title: "抵達克拉科夫", icon: "fa-train", desc: "從布拉格搭車抵達 Kraków Główny → 飯店 Check-in", note: "建議搭 tram (電車) 或走路，車站離舊城很近。車站超市可買水。" },
-                    { time: "18:00", title: "舊城聖誕市集", icon: "fa-tree", desc: "Rynek Główny 廣場漫步，感受聖誕氛圍", note: "聖誕節當天商店多休息，但市集攤位會開" },
-                    { time: "晚餐", title: "聖誕夜晚餐", icon: "fa-utensils", desc: "Morskie Oko (波蘭山區菜) 或 Gościnna Chata", note: "第一晚適合氣氛佳的傳統餐廳" },
-                    { time: "20:00", title: "夜遊紡織會館", icon: "fa-moon", desc: "在 Cloth Hall 迴廊散步，拍點燈後的聖瑪莉教堂", note: "吃飽後散步消化，就在餐廳附近，不用搭車" }
-                ],
-                restaurants: [
-                    { name: "Morskie Oko", type: "晚餐首選", price: "zł 60-100", rate: "4.7 (7000+ 則評論)", desc: "高地人風格木造餐廳，氣氛極佳，必點酸湯、餃子", addr: "Plac Szczepański 8, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Morskie+Oko+Krakow" },
-                    { name: "Gościnna Chata", type: "晚餐備選1", price: "zł 50-90", rate: "4.5 (3000+ 則評論)", desc: "傳統波蘭鄉村菜，溫馨舒適", addr: "Sławkowska 10, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Goscinna+Chata+Krakow" },
-                    { name: "Pod Baranem", type: "晚餐備選2", price: "zł 70-120", rate: "4.6 (2500+ 則評論)", desc: "就在瓦維爾城堡旁，評價極高的傳統波蘭菜", addr: "Świętej Gertrudy 21, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Pod+Baranem+Krakow" }
-                ]
-            },
-            {
-                date: "12/26", day: "週五", city: "Kraków",
-                events: [
-                    { time: "08:30", title: "前往維利奇卡鹽礦", icon: "fa-train", desc: "Kraków Główny 搭火車至 Wieliczka Rynek-Kopalnia", note: "車程僅 20 分鐘，班次頻繁，比跟團更自由" },
-                    { time: "09:30", title: "★ 鹽礦地底探險", icon: "fa-gem", desc: "參觀世界遺產鹽礦，震撼的地下教堂與鹽雕", note: "地底恆溫舒適，12/26 確定開放，需購票入場" },
-                    { time: "12:30", title: "返回市區/猶太區午餐", icon: "fa-utensils", desc: "搭火車回市區，直接去 Kazimierz 吃午餐", note: "Hamsa (猶太菜) 或 Zapiekanka (長條披薩)" },
-                    { time: "14:30", title: "辛德勒工廠", icon: "fa-history", desc: "參觀二戰歷史展覽 (需提前預約)", note: "從猶太區步行過橋或搭 Tram 3/24 到 Plac Bohaterów Getta" },
-                    { time: "晚餐", title: "精緻晚餐", icon: "fa-utensils", desc: "Zazie Bistro (法式/猶太融合) 或 Starka", note: "Zazie Bistro 評價極高，建議訂位" },
-                    { time: "20:00", title: "猶太區小酌", icon: "fa-glass-cheers", desc: "Alchemia 或 Singera，感受波蘭獨特酒吧氛圍", note: "這區晚上氣氛很好，就在 Plac Nowy 旁，喝杯伏特加或熱紅酒" }
-                ],
-                restaurants: [
-                    { name: "Zazie Bistro", type: "晚餐首選", price: "zł 60-120", rate: "4.8 (4000+ 則評論)", desc: "米其林推薦，位於猶太區，CP值超高的法式料理", addr: "Józefa 34, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Zazie+Bistro+Krakow" },
-                    { name: "Restauracja Starka", type: "晚餐備選1", price: "zł 60-100", rate: "4.7 (3500+ 則評論)", desc: "自製伏特加聞名，燉肉料理很強", addr: "Józefa 14, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Restauracja+Starka+Krakow" },
-                    { name: "Pod Wawelem", type: "晚餐備選2", price: "zł 40-70", rate: "4.5 (10000+ 則評論)", desc: "城堡腳下，以「巨無霸炸豬排」跟啤酒聞名，份量驚人", addr: "św. Gertrudy 26-29, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Pod+Wawelem+Krakow" }
-                ]
-            },
-            {
-                date: "12/27", day: "週六", city: "Kraków",
-                events: [
-                    { time: "06:30", title: "奧斯威辛一日團", icon: "fa-bus", desc: "集合前往 Auschwitz-Birkenau 集中營", note: "★ 戶外空曠風大，務必保暖、穿防滑鞋，帶水與零食" },
-                    { time: "下午", title: "回市區休息", icon: "fa-coffee", desc: "E. Wedel 喝熱巧克力回血，稍作休息", note: "集中營行程較沉重，下午排鬆一點" },
-                    { time: "晚餐", title: "旅程收尾晚餐", icon: "fa-utensils", desc: "Szara Gęś (主廣場旁) 或 Czarna Kaczka", note: "在漂亮的環境下享用正式晚餐" },
-                    { time: "20:00", title: "維斯瓦河畔夜景", icon: "fa-water", desc: "沿著河岸看 Wawel 城堡夜景", note: "從主廣場沿 Grodzka 街走到河邊，非常浪漫" }
-                ],
-                restaurants: [
-                    { name: "Szara Gęś", type: "晚餐首選", price: "zł 100-200", rate: "4.6 (3800+ 則評論)", desc: "「灰鵝」餐廳，主廣場旁，裝潢華麗，現代波蘭精緻料理", addr: "Rynek Główny 17, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Szara+Ges+Krakow" },
-                    { name: "Czarna Kaczka", type: "晚餐備選1", price: "zł 60-100", rate: "4.7 (4500+ 則評論)", desc: "「黑鴨」餐廳，招牌是烤鴨與馬鈴薯煎餅", addr: "Poselska 22, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Czarna+Kaczka+Krakow" },
-                    { name: "Miód Malina", type: "晚餐備選2", price: "zł 60-100", rate: "4.6 (2000+ 則評論)", desc: "溫馨風格，炸豬排與野菇湯很有名", addr: "Grodzka 40, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Miod+Malina+Krakow" }
-                ]
-            },
-            {
-                date: "12/28", day: "週日", city: "Kra → War",
-                events: [
-                    { time: "07:30", title: "最後散步", icon: "fa-bread-slice", desc: "買 Obwarzanek (藍色小車麵包圈) 當早餐", note: "簡單逛逛舊城早晨" },
-                    { time: "09:34", title: "火車往華沙", icon: "fa-train", desc: "09:34 Kraków → 13:52 Warsaw Centralna", note: "搭 Tram 至車站或 Bolt (如有大行李)" },
-                    { time: "14:15", title: "抵達飯店", icon: "fa-hotel", desc: "Mariensztat 8 Hotel (靠舊城)", note: "從中央車站搭 Bus 175/128/116 等到老城附近，或搭 Bolt" },
-                    { time: "14:30", title: "午餐：Specjały", icon: "fa-utensils", desc: "Specjały Regionalne 享用波蘭餃子/酸湯", note: "就在皇家大道上，從飯店步行可達" },
-                    { time: "16:00", title: "巴巴坎城牆/點燈", icon: "fa-lightbulb", desc: "剛好遇到聖誕燈飾亮燈，最美時段", note: "沿著皇家大道走到老城廣場" },
-                    { time: "晚餐", title: "Zapiecek", icon: "fa-utensils", desc: "連鎖但好吃的波蘭餃子店", note: "店員穿傳統服飾，氣氛熱鬧" },
-                    { time: "20:00", title: "皇家大道散步", icon: "fa-walking", desc: "從城堡廣場沿 Krakowskie Przedmieście 散步", note: "這是華沙聖誕燈飾最密集的一條街，適合飯後消化" }
-                ],
-                restaurants: [
-                    { name: "Zapiecek (Polskie Pierogarnie)", type: "晚餐首選", price: "zł 40-60", rate: "4.4 (15000+ 則評論)", desc: "華沙到處都有的餃子名店，酸湯 Żurek 必點", addr: "Old Town, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Zapiecek+Warsaw" },
-                    { name: "Specjały Regionalne", type: "午餐/晚餐備選", price: "zł 50-80", rate: "4.5 (3000+ 則評論)", desc: "皇家大道上的名店，食材強調在地天然", addr: "Nowy Świat 44, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Specjaly+Regionalne+Warsaw" },
-                    { name: "Gosciniec Polskie Pierogi", type: "晚餐備選2", price: "zł 40-70", rate: "4.6 (6000+ 則評論)", desc: "就在老城區入口，也是吃餃子和傳統菜的好地方", addr: "Podwale 19, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Gosciniec+Polskie+Pierogi+Warsaw" }
-                ]
-            },
-            {
-                date: "12/29", day: "週一", city: "Warsaw",
-                events: [
-                    { time: "09:30", title: "瓦津基公園", icon: "fa-tree", desc: "水上宮殿 (週一不開放內部) + 蕭邦雕像", note: "搭 Bus 116/180 直達 Łazienki Królewskie" },
-                    { time: "11:30", title: "科學文化宮", icon: "fa-building", desc: "蘇聯式建築地標，天氣好可登頂", note: "搭 Tram/Bus 回市中心 Centrum 站" },
-                    { time: "12:30", title: "午餐：Hala Koszyki", icon: "fa-utensils", desc: "時尚美食廣場，冬天避寒首選", note: "搭 Tram 往 Politechnika 方向，步行即達" },
-                    { time: "14:30", title: "POLIN 博物館", icon: "fa-star-of-david", desc: "波蘭猶太人歷史博物館", note: "搭 Bus 111/180 前往 Muranów 區" },
-                    { time: "17:00", title: "購物/休息", icon: "fa-shopping-bag", desc: "Złote Tarasy (金色梯田) 購物中心", note: "就在中央車站旁，可買波蘭品牌 Reserved" },
-                    { time: "晚餐", title: "儀式感波蘭菜", icon: "fa-utensils", desc: "Stary Dom (老房子餐廳)", note: "★ 務必預約，離市中心稍遠，建議搭 Tram 4/10/18 或 Bolt" },
-                    { time: "20:30", title: "華沙夜景", icon: "fa-city", desc: "如果還有體力，回市中心看摩天樓夜景", note: "Rondo ONZ 附近的現代建築群晚上很美" }
-                ],
-                restaurants: [
-                    { name: "Stary Dom", type: "晚餐首選", price: "zł 80-150", rate: "4.8 (10000+ 則評論)", desc: "華沙極富盛名的傳統餐廳，塔塔牛肉會有廚師推車到桌邊現拌", addr: "Puławska 104/106, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Restauracja+Stary+Dom+Warsaw" },
-                    { name: "Restauracja Różana", type: "晚餐備選1", price: "zł 80-150", rate: "4.7 (4000+ 則評論)", desc: "極度優雅、充滿鮮花的浪漫餐廳，適合約會", addr: "Chocimska 7, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Restauracja+Rozana+Warsaw" },
-                    { name: "Hala Koszyki", type: "午餐/晚餐備選2", price: "zł 30-70", rate: "4.6 (22000+ 則評論)", desc: "由老市場改建的時髦美食大廳，氣氛很好，選擇多", addr: "Koszykowa 63, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Hala+Koszyki+Warsaw" }
-                ]
-            },
-            {
-                date: "12/30", day: "週二", city: "War → Wro",
-                events: [
-                    { time: "06:30", title: "退房/前往車站", icon: "fa-suitcase", desc: "前往 Warszawa Centralna", note: "搭 Bus 175/128 或 Bolt 至車站，預留時間找月台" },
-                    { time: "08:12", title: "火車前往弗羅茨瓦夫", icon: "fa-train", desc: "08:12 Warsaw → 12:44 Wrocław Główny", note: "約 4.5 小時車程，車上有餐車可買咖啡" },
-                    { time: "13:30", title: "飯店/午餐", icon: "fa-hotel", desc: "Brassel Aparthotel 放行李，周邊簡單吃", note: "飯店離車站很近，步行可達。去舊城搭 Tram 2/5/11" },
-                    { time: "15:00", title: "白天舊城巡禮", icon: "fa-walking", desc: "Rynek 廣場、市政廳、聖伊莉莎白教堂", note: "沿路尋找小矮人 (Dwarfs)" },
-                    { time: "17:00", title: "🎄 聖誕點燈", icon: "fa-star", desc: "留在 Rynek 看整區燈飾亮起，最童話的一段", note: "弗羅茨瓦夫的聖誕市集被譽為波蘭最美" },
-                    { time: "晚餐", title: "Kurna Chata", icon: "fa-utensils", desc: "傳統波蘭菜 (免訂位)，小木屋風格", note: "備選：Piwnica Świdnicka (舊市政廳地下酒館)" },
-                    { time: "20:00", title: "座堂島夜遊", icon: "fa-church", desc: "散步去 Ostrów Tumski (座堂島)", note: "晚上非常寧靜神聖，運氣好可以看到提燈人 (Lamplighter)" }
-                ],
-                restaurants: [
-                    { name: "Kurna Chata", type: "晚餐首選", price: "zł 40-70", rate: "4.5 (6000+ 則評論)", desc: "裝潢像傳統農舍，菜色道地，價格親民", addr: "Odrzańska 17, Wrocław", url: "https://www.google.com/maps/search/?api=1&query=Kurna+Chata+Wroclaw" },
-                    { name: "Piwnica Świdnicka", type: "晚餐備選1", price: "zł 60-100", rate: "4.4 (1500+ 則評論)", desc: "歐洲最古老的餐廳之一，位於舊市政廳地下", addr: "Rynek Ratusz 1, Wrocław", url: "https://www.google.com/maps/search/?api=1&query=Piwnica+Swidnicka+Wroclaw" },
-                    { name: "Konspira", type: "晚餐備選2", price: "zł 40-70", rate: "4.7 (7000+ 則評論)", desc: "共產時代主題餐廳，食物份量大又好吃，很有特色", addr: "Plac Solny 11, Wrocław", url: "https://www.google.com/maps/search/?api=1&query=Konspira+Wroclaw" }
-                ]
-            },
-            {
-                date: "12/31", day: "週三", city: "Wro → Pra",
-                events: [
-                    { time: "09:00", title: "早晨散步", icon: "fa-sun", desc: "Rynek (白天版) → Tumski Bridge → 教堂島", note: "如果昨晚沒去教堂島，今早必去。搭 Tram 或步行" },
-                    { time: "11:30", title: "回飯店取行李", icon: "fa-suitcase", desc: "整理行李、退房", note: "從舊城搭 Tram 回車站附近飯店" },
-                    { time: "12:10", title: "前往車站", icon: "fa-train", desc: "步行或 Bolt 至 Wrocław Główny", note: "最晚 12:10 出門" },
-                    { time: "13:13", title: "火車前往布拉格", icon: "fa-train", desc: "13:13 出發 → 前往 Prague", note: "跨國移動，建議在車站買簡餐與咖啡上車" }
-                ],
-                restaurants: [
-                    { name: "車站簡餐", type: "午餐", price: "N/A", rate: "N/A", desc: "Wrocław Główny 車站內有咖啡店與速食店", addr: "Wrocław Główny", url: "#" }
-                ]
+        document.addEventListener('DOMContentLoaded', () => {
+            // ---------------- Data ----------------
+            const itinerary = [
+                {
+                    date: "12/25", day: "週四", city: "Kraków",
+                    events: [
+                        { time: "16:41", title: "抵達克拉科夫", icon: "fa-train", desc: "從布拉格搭火車抵達 Kraków Główny → 飯店 Check-in", note: "建議搭 tram (電車) 或走路，車站離舊城很近。車站超市可買水。" },
+                        { time: "18:00", title: "舊城聖誕市集", icon: "fa-tree", desc: "Rynek Główny 廣場漫步，感受聖誕氛圍", note: "聖誕節當天商店多休息，但市集攤位會開" },
+                        { time: "晚餐", title: "聖誕夜晚餐", icon: "fa-utensils", desc: "Morskie Oko (波蘭山區菜) 或 Gościnna Chata", note: "第一晚適合氣氛佳的傳統餐廳，務必預約" },
+                        { time: "20:00", title: "夜遊紡織會館", icon: "fa-moon", desc: "在 Cloth Hall 迴廊散步，拍點燈後的聖瑪莉教堂", note: "吃飽後散步消化，就在餐廳附近，不用搭車" }
+                    ],
+                    restaurants: [
+                        { name: "Morskie Oko", type: "晚餐首選", price: "zł 60-100", rate: "4.7 (7,800+ 則評論)", desc: "高地人風格木造餐廳，氣氛極佳，必點酸湯、餃子", addr: "Plac Szczepański 8, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Morskie+Oko+Krakow" },
+                        { name: "Gościnna Chata", type: "晚餐備選1", price: "zł 50-90", rate: "4.5 (3,200+ 則評論)", desc: "傳統波蘭鄉村菜，溫馨舒適，就在舊城區", addr: "Sławkowska 10, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Goscinna+Chata+Krakow" },
+                        { name: "Pod Baranem", type: "晚餐備選2", price: "zł 70-120", rate: "4.6 (2,600+ 則評論)", desc: "就在瓦維爾城堡旁，評價極高的傳統波蘭菜，適合家庭聚餐", addr: "Świętej Gertrudy 21, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Pod+Baranem+Krakow" }
+                    ]
+                },
+                {
+                    date: "12/26", day: "週五", city: "Kraków",
+                    events: [
+                        { time: "09:00", title: "瓦維爾主教堂 (Cathedral)", icon: "fa-church", desc: "參觀波蘭國王加冕與長眠之地，必看齊格蒙特鐘", note: "教堂免費，但參觀皇家墓穴與鐘塔需購票" },
+                        { time: "10:30", title: "瓦維爾城堡地下路線", icon: "fa-dungeon", desc: "Wawel Underground: Crown Treasury 或 Lost Wawel", note: "非常精彩的考古與歷史展，推薦 'Lost Wawel' 路線" },
+                        { time: "12:30", title: "猶太區午餐", icon: "fa-utensils", desc: "從城堡步行至 Kazimierz 區用餐", note: "Hamsa (猶太菜) 或 Zapiekanka (長條披薩)" },
+                        { time: "14:30", title: "辛德勒工廠", icon: "fa-history", desc: "參觀二戰歷史展覽 (需提前預約)", note: "從猶太區步行過橋或搭 Tram 3/24 到 Plac Bohaterów Getta" },
+                        { time: "晚餐", title: "精緻晚餐", icon: "fa-utensils", desc: "Zazie Bistro (法式/猶太融合) 或 Starka", note: "Zazie Bistro 評價極高，建議訂位" },
+                        { time: "20:00", title: "猶太區小酌", icon: "fa-glass-cheers", desc: "Alchemia 或 Singera，感受波蘭獨特酒吧氛圍", note: "這區晚上氣氛很好，就在 Plac Nowy 旁，喝杯伏特加或熱紅酒" }
+                    ],
+                    restaurants: [
+                        { name: "Zazie Bistro", type: "晚餐首選", price: "zł 60-120", rate: "4.8 (4,100+ 則評論)", desc: "米其林推薦，位於猶太區，CP值超高的法式料理", addr: "Józefa 34, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Zazie+Bistro+Krakow" },
+                        { name: "Restauracja Starka", type: "晚餐備選1", price: "zł 60-100", rate: "4.7 (3,900+ 則評論)", desc: "自製伏特加聞名，燉肉料理很強，氣氛熱鬧", addr: "Józefa 14, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Restauracja+Starka+Krakow" },
+                        { name: "Pod Wawelem", type: "晚餐備選2", price: "zł 40-70", rate: "4.5 (13,000+ 則評論)", desc: "城堡腳下，以「巨無霸炸豬排」跟啤酒聞名，份量驚人", addr: "św. Gertrudy 26-29, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Pod+Wawelem+Krakow" }
+                    ]
+                },
+                {
+                    date: "12/27", day: "週六", city: "Kraków",
+                    events: [
+                        { time: "06:30", title: "奧斯威辛一日團", icon: "fa-bus", desc: "集合前往 Auschwitz-Birkenau 集中營", note: "★ 戶外空曠風大，務必保暖、穿防滑鞋，帶水與零食" },
+                        { time: "下午", title: "回市區休息", icon: "fa-coffee", desc: "E. Wedel 喝熱巧克力回血，稍作休息", note: "集中營行程較沉重，下午排鬆一點" },
+                        { time: "晚餐", title: "旅程收尾晚餐", icon: "fa-utensils", desc: "Szara Gęś (主廣場旁) 或 Czarna Kaczka", note: "在漂亮的環境下享用正式晚餐" },
+                        { time: "20:00", title: "維斯瓦河畔夜景", icon: "fa-water", desc: "沿著河岸看 Wawel 城堡夜景", note: "從主廣場沿 Grodzka 街走到河邊，非常浪漫" }
+                    ],
+                    restaurants: [
+                        { name: "Szara Gęś", type: "晚餐首選", price: "zł 100-200", rate: "4.6 (3,800+ 則評論)", desc: "「灰鵝」餐廳，主廣場旁，裝潢華麗，現代波蘭精緻料理", addr: "Rynek Główny 17, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Szara+Ges+Krakow" },
+                        { name: "Czarna Kaczka", type: "晚餐備選1", price: "zł 60-100", rate: "4.7 (4,500+ 則評論)", desc: "「黑鴨」餐廳，招牌是烤鴨與馬鈴薯煎餅", addr: "Poselska 22, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Czarna+Kaczka+Krakow" },
+                        { name: "Miód Malina", type: "晚餐備選2", price: "zł 60-100", rate: "4.6 (2,200+ 則評論)", desc: "溫馨風格，炸豬排與野菇湯很有名", addr: "Grodzka 40, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Miod+Malina+Krakow" }
+                    ]
+                },
+                {
+                    date: "12/28", day: "週日", city: "Kra → War",
+                    events: [
+                        { time: "07:30", title: "最後散步", icon: "fa-bread-slice", desc: "買 Obwarzanek (藍色小車麵包圈) 當早餐", note: "簡單逛逛舊城早晨" },
+                        { time: "09:34", title: "火車往華沙", icon: "fa-train", desc: "09:34 Kraków → 13:52 Warsaw Centralna", note: "搭 Tram 至車站或 Bolt (如有大行李)" },
+                        { time: "14:15", title: "抵達飯店", icon: "fa-hotel", desc: "Mariensztat 8 Hotel (靠舊城)", note: "從中央車站搭 Bus 175/128/116 等到老城附近，或搭 Bolt" },
+                        { time: "14:30", title: "午餐：Specjały", icon: "fa-utensils", desc: "Specjały Regionalne 享用波蘭餃子/酸湯", note: "就在皇家大道上，從飯店步行可達" },
+                        { time: "16:00", title: "巴巴坎城牆/點燈", icon: "fa-lightbulb", desc: "剛好遇到聖誕燈飾亮燈，最美時段", note: "沿著皇家大道走到老城廣場" },
+                        { time: "晚餐", title: "Zapiecek", icon: "fa-utensils", desc: "連鎖但好吃的波蘭餃子店", note: "店員穿傳統服飾，氣氛熱鬧" },
+                        { time: "20:00", title: "皇家大道散步", icon: "fa-walking", desc: "從城堡廣場沿 Krakowskie Przedmieście 散步", note: "這是華沙聖誕燈飾最密集的一條街，適合飯後消化" }
+                    ],
+                    restaurants: [
+                        { name: "Zapiecek (Polskie Pierogarnie)", type: "晚餐首選", price: "zł 40-60", rate: "4.4 (15,000+ 則評論)", desc: "華沙到處都有的餃子名店，酸湯 Żurek 必點", addr: "Old Town, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Zapiecek+Warsaw" },
+                        { name: "Specjały Regionalne", type: "午餐/晚餐備選", price: "zł 50-80", rate: "4.5 (3,300+ 則評論)", desc: "皇家大道上的名店，食材強調在地天然", addr: "Nowy Świat 44, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Specjaly+Regionalne+Warsaw" },
+                        { name: "Gościniec Polskie Pierogi", type: "晚餐備選2", price: "zł 40-70", rate: "4.6 (6,800+ 則評論)", desc: "就在老城區入口，也是吃餃子和傳統菜的好地方", addr: "Podwale 19, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Gosciniec+Polskie+Pierogi+Warsaw" }
+                    ]
+                },
+                {
+                    date: "12/29", day: "週一", city: "Warsaw",
+                    events: [
+                        { time: "09:30", title: "瓦津基公園", icon: "fa-tree", desc: "水上宮殿 (週一不開放內部) + 蕭邦雕像", note: "搭 Bus 116/180 直達 Łazienki Królewskie" },
+                        { time: "11:30", title: "科學文化宮", icon: "fa-building", desc: "蘇聯式建築地標，天氣好可登頂", note: "搭 Tram/Bus 回市中心 Centrum 站" },
+                        { time: "12:30", title: "午餐：Hala Koszyki", icon: "fa-utensils", desc: "時尚美食廣場，冬天避寒首選", note: "搭 Tram 往 Politechnika 方向，步行即達" },
+                        { time: "14:30", title: "POLIN 博物館", icon: "fa-star-of-david", desc: "波蘭猶太人歷史博物館", note: "搭 Bus 111/180 前往 Muranów 區" },
+                        { time: "17:00", title: "購物/休息", icon: "fa-shopping-bag", desc: "Złote Tarasy (金色梯田) 購物中心", note: "就在中央車站旁，可買波蘭品牌 Reserved" },
+                        { time: "晚餐", title: "儀式感波蘭菜", icon: "fa-utensils", desc: "Stary Dom (老房子餐廳)", note: "★ 務必預約，離市中心稍遠，建議搭 Tram 4/10/18 或 Bolt" },
+                        { time: "20:30", title: "華沙夜景", icon: "fa-city", desc: "如果還有體力，回市中心看摩天樓夜景", note: "Rondo ONZ 附近的現代建築群晚上很美" }
+                    ],
+                    restaurants: [
+                        { name: "Stary Dom", type: "晚餐首選", price: "zł 80-150", rate: "4.8 (10,000+ 則評論)", desc: "華沙極富盛名的傳統餐廳，塔塔牛肉會有廚師推車到桌邊現拌", addr: "Puławska 104/106, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Restauracja+Stary+Dom+Warsaw" },
+                        { name: "Restauracja Różana", type: "晚餐備選1", price: "zł 80-150", rate: "4.7 (4,500+ 則評論)", desc: "極度優雅、充滿鮮花的浪漫餐廳，適合約會", addr: "Chocimska 7, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Restauracja+Rozana+Warsaw" },
+                        { name: "Hala Koszyki", type: "午餐/晚餐備選2", price: "zł 30-70", rate: "4.6 (22,000+ 則評論)", desc: "由老市場改建的時髦美食大廳，氣氛很好，選擇多", addr: "Koszykowa 63, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Hala+Koszyki+Warsaw" }
+                    ]
+                },
+                {
+                    date: "12/30", day: "週二", city: "War → Wro",
+                    events: [
+                        { time: "06:30", title: "退房/前往車站", icon: "fa-suitcase", desc: "前往 Warszawa Centralna", note: "搭 Bus 175/128 或 Bolt 至車站，預留時間找月台" },
+                        { time: "08:12", title: "火車前往弗羅茨瓦夫", icon: "fa-train", desc: "08:12 Warsaw → 12:44 Wrocław Główny", note: "約 4.5 小時車程，車上有餐車可買咖啡" },
+                        { time: "13:30", title: "飯店/午餐", icon: "fa-hotel", desc: "Brassel Aparthotel 放行李，周邊簡單吃", note: "飯店離車站很近，步行可達。去舊城搭 Tram 2/5/11" },
+                        { time: "15:00", title: "白天舊城巡禮", icon: "fa-walking", desc: "Rynek 廣場、市政廳、聖伊莉莎白教堂", note: "沿路尋找小矮人 (Dwarfs)" },
+                        { time: "17:00", title: "🎄 聖誕點燈", icon: "fa-star", desc: "留在 Rynek 看整區燈飾亮起，最童話的一段", note: "弗羅茨瓦夫的聖誕市集被譽為波蘭最美" },
+                        { time: "晚餐", title: "Kurna Chata", icon: "fa-utensils", desc: "傳統波蘭菜 (免訂位)，小木屋風格", note: "備選：Piwnica Świdnicka (舊市政廳地下酒館)" },
+                        { time: "20:00", title: "座堂島夜遊", icon: "fa-church", desc: "散步去 Ostrów Tumski (座堂島)", note: "晚上非常寧靜神聖，運氣好可以看到提燈人 (Lamplighter)" }
+                    ],
+                    restaurants: [
+                        { name: "Kurna Chata", type: "晚餐首選", price: "zł 40-70", rate: "4.5 (6,200+ 則評論)", desc: "裝潢像傳統農舍，菜色道地，價格親民", addr: "Odrzańska 17, Wrocław", url: "https://www.google.com/maps/search/?api=1&query=Kurna+Chata+Wroclaw" },
+                        { name: "Piwnica Świdnicka", type: "晚餐備選1", price: "zł 60-100", rate: "4.4 (1,700+ 則評論)", desc: "歐洲最古老的餐廳之一，位於舊市政廳地下", addr: "Rynek Ratusz 1, Wrocław", url: "https://www.google.com/maps/search/?api=1&query=Piwnica+Swidnicka+Wroclaw" },
+                        { name: "Konspira", type: "晚餐備選2", price: "zł 40-70", rate: "4.7 (7,800+ 則評論)", desc: "共產時代主題餐廳，食物份量大又好吃，很有特色", addr: "Plac Solny 11, Wrocław", url: "https://www.google.com/maps/search/?api=1&query=Konspira+Wroclaw" }
+                    ]
+                },
+                {
+                    date: "12/31", day: "週三", city: "Wro → Pra",
+                    events: [
+                        { time: "09:00", title: "早晨散步", icon: "fa-sun", desc: "Rynek (白天版) → Tumski Bridge → 教堂島", note: "如果昨晚沒去教堂島，今早必去。搭 Tram 或步行" },
+                        { time: "11:30", title: "回飯店取行李", icon: "fa-suitcase", desc: "整理行李、退房", note: "從舊城搭 Tram 回車站附近飯店" },
+                        { time: "12:10", title: "前往車站", icon: "fa-train", desc: "步行或 Bolt 至 Wrocław Główny", note: "最晚 12:10 出門" },
+                        { time: "13:13", title: "火車前往布拉格", icon: "fa-train", desc: "13:13 出發 → 前往 Prague", note: "跨國移動，建議在車站買簡餐與咖啡上車" }
+                    ],
+                    restaurants: [
+                        { name: "車站簡餐", type: "午餐", price: "N/A", rate: "N/A", desc: "Wrocław Główny 車站內有咖啡店與速食店", addr: "Wrocław Główny", url: "#" }
+                    ]
+                }
+            ];
+
+            // ---------------- Asian Restaurant Data ----------------
+            const asianRestaurants = [
+                // Warsaw (Mariensztat 8 area)
+                {
+                    city: "Warsaw (Mariensztat 8)",
+                    name: "Pełną Parą na Powiślu",
+                    cuisine: "Dim Sum / 亞洲融合",
+                    price: "zł 40-70",
+                    rate: "4.5 (1800+)",
+                    desc: "離您飯店最近 (步行約 10-12 分鐘)，位於 Elektrownia Powiśle 內，環境時髦，蒸餃非常有名。",
+                    addr: "Elektrownia Powiśle, Zajęcza 2B, Warsaw",
+                    url: "https://www.google.com/maps/search/?api=1&query=Pelna+Para+Powisle"
+                },
+                {
+                    city: "Warsaw (Mariensztat 8)",
+                    name: "Thaisty",
+                    cuisine: "泰式料理",
+                    price: "zł 40-80",
+                    rate: "4.6 (3000+)",
+                    desc: "華沙最紅的泰式餐廳之一，口味正宗，距離飯店約 2 公里 (建議搭 Bolt)。",
+                    addr: "plac Bankowy 4, Warsaw",
+                    url: "https://www.google.com/maps/search/?api=1&query=Thaisty+Warsaw"
+                },
+                {
+                    city: "Warsaw (Mariensztat 8)",
+                    name: "Uki Uki",
+                    cuisine: "日式烏龍麵",
+                    price: "zł 35-60",
+                    rate: "4.7 (3000+)",
+                    desc: "手工烏龍麵名店，湯頭濃郁，經常排隊。",
+                    addr: "Krucza 23/31, Warsaw",
+                    url: "https://www.google.com/maps/search/?api=1&query=Uki+Uki+Warsaw"
+                },
+                {
+                    city: "Warsaw (Mariensztat 8)",
+                    name: "To To Pho",
+                    cuisine: "越南河粉",
+                    price: "zł 30-50",
+                    rate: "4.3 (2400+)",
+                    desc: "想喝熱湯的首選，牛肉河粉份量足，CP值高。",
+                    addr: "Chmielna 5/7, Warsaw",
+                    url: "https://www.google.com/maps/search/?api=1&query=To+To+Pho+Warsaw"
+                },
+                {
+                    city: "Warsaw (Mariensztat 8)",
+                    name: "Haechi Shop",
+                    cuisine: "韓式小吃",
+                    price: "zł 25-50",
+                    rate: "4.6 (1000+)",
+                    desc: "韓式飯捲、辣炒年糕，也是補貨韓國泡麵的好地方。",
+                    addr: "Nowy Świat (check map), Warsaw",
+                    url: "https://www.google.com/maps/search/?api=1&query=Haechi+Shop+Warsaw"
+                },
+
+                // Wrocław (Brassel area)
+                {
+                    city: "Wrocław (Brassel)",
+                    name: "Osiem Misek",
+                    cuisine: "亞洲融合 / 包子",
+                    price: "zł 30-60",
+                    rate: "4.7 (3000+)",
+                    desc: "弗羅茨瓦夫必吃！刈包 (Bao) 和叻沙麵非常強。",
+                    addr: "Włodkowica 27, Wrocław",
+                    url: "https://www.google.com/maps/search/?api=1&query=Osiem+Misek+Wroclaw"
+                },
+                {
+                    city: "Wrocław (Brassel)",
+                    name: "Panda Ramen",
+                    cuisine: "拉麵",
+                    price: "zł 35-55",
+                    rate: "4.6 (2000+)",
+                    desc: "當地非常有名的拉麵店，湯頭選擇多。",
+                    addr: "Białoskórnicza 17/18, Wrocław",
+                    url: "https://www.google.com/maps/search/?api=1&query=Panda+Ramen+Wroclaw"
+                },
+                {
+                    city: "Wrocław (Brassel)",
+                    name: "Chingu Korean BBQ",
+                    cuisine: "韓式烤肉",
+                    price: "zł 50-90",
+                    rate: "4.7 (1500+)",
+                    desc: "想大口吃肉的首選，評價極高的韓式料理。",
+                    addr: "Włodkowica 19, Wrocław",
+                    url: "https://www.google.com/maps/search/?api=1&query=Chingu+Korean+BBQ+Wroclaw"
+                },
+
+                // Kraków
+                {
+                    city: "Kraków (Old Town)",
+                    name: "Urara Sushi",
+                    cuisine: "日式料理 / 壽司",
+                    price: "zł 50-100",
+                    rate: "4.7 (1500+)",
+                    desc: "舊城區內的高品質日料，想念米飯時的好去處。",
+                    addr: "Świętego Tomasza 19, Kraków",
+                    url: "https://www.google.com/maps/search/?api=1&query=Urara+Sushi+Krakow"
+                },
+                {
+                    city: "Kraków (Old Town)",
+                    name: "Ramen People",
+                    cuisine: "拉麵",
+                    price: "zł 35-50",
+                    rate: "4.6 (1200+)",
+                    desc: "猶太區附近的文青拉麵店，適合冬天暖胃。",
+                    addr: "Czysta 8, Kraków",
+                    url: "https://www.google.com/maps/search/?api=1&query=Ramen+People+Krakow"
+                }
+            ];
+
+            // ---------------- Supermarket Data ----------------
+            const polishSupermarkets = [
+                {
+                    name: "Asia Sources Supermarket (亞洲匯)",
+                    type: "華沙亞超 (Google 4.8星)",
+                    desc: "華沙評價極高的亞洲超市，商品種類齊全，有新鮮蔬菜、零食、冷凍食品。",
+                    note: "位於華沙 Mokotów 區，離市中心稍遠，建議搭 Bolt 前往。",
+                    url: "https://www.google.com/maps/search/?api=1&query=Asia+Sources+Supermarket+Warsaw"
+                },
+                {
+                    name: "Haechi Shop (海獬)",
+                    type: "華沙韓超 (Google 4.6星)",
+                    desc: "韓式超市結合街頭小吃店，可以買到各類韓國泡麵、零食，還能順便吃個飯捲。",
+                    note: "位於華沙市中心附近。",
+                    url: "https://www.google.com/maps/search/?api=1&query=Haechi+Shop+Warsaw"
+                },
+                {
+                    name: "Asia Deli",
+                    type: "克拉科夫亞超 (Google 4.5星)",
+                    desc: "克拉科夫舊城附近的亞洲食品店，評價不錯，適合補給。",
+                    note: "Węgłowa 1, Kraków",
+                    url: "https://www.google.com/maps/search/?api=1&query=Asia+Deli+Krakow"
+                },
+                {
+                    name: "Kuchnie Świata",
+                    type: "進口超市 (連鎖)",
+                    desc: "波蘭連鎖進口超市，各大購物中心 (如 Złote Tarasy) 都有。東西較貴但方便。",
+                    note: "如果在市中心急需醬料或泡麵，這是最方便的選擇。",
+                    url: "https://www.google.com/maps/search/?api=1&query=Kuchnie+Swiata+Warszawa"
+                },
+                {
+                    name: "Żabka (青蛙超市)",
+                    type: "便利商店",
+                    desc: "波蘭版 7-11，到處都有。買水、熱狗堡 (Hot Dog)、三明治、零食超方便。",
+                    note: "營業時間通常很長 (6:00-23:00)，週日通常也開。",
+                    url: "https://www.google.com/maps/search/?api=1&query=Zabka"
+                }
+            ];
+
+            // ---------------- Logic ----------------
+            let activeDayIndex = 0;
+            let supermarketRendered = false;
+            let asianRendered = false;
+
+            const dateTabs = document.getElementById('dateTabs');
+            const scheduleContainer = document.getElementById('scheduleView');
+            const restaurantContainer = document.getElementById('restaurantView');
+            const asianRestaurantContainer = document.getElementById('asianRestaurantView');
+            const supermarketContainer = document.getElementById('supermarketView');
+            const navSchedule = document.getElementById('nav-schedule');
+            const navRestaurant = document.getElementById('nav-restaurant');
+            const navAsianFood = document.getElementById('nav-asianFood');
+            const navSupermarket = document.getElementById('nav-supermarket');
+
+            // Set up navigation event listeners
+            document.getElementById('nav-schedule').addEventListener('click', () => switchView('schedule'));
+            document.getElementById('nav-restaurant').addEventListener('click', () => switchView('restaurant'));
+            document.getElementById('nav-asianFood').addEventListener('click', () => switchView('asianFood'));
+            document.getElementById('nav-supermarket').addEventListener('click', () => switchView('supermarket'));
+
+            function switchView(viewName) {
+                scheduleContainer.classList.add('hidden');
+                restaurantContainer.classList.add('hidden');
+                asianRestaurantContainer.classList.add('hidden');
+                supermarketContainer.classList.add('hidden');
+                
+                navSchedule.classList.remove('nav-active'); navSchedule.classList.add('nav-inactive');
+                navRestaurant.classList.remove('nav-active'); navRestaurant.classList.add('nav-inactive');
+                navAsianFood.classList.remove('nav-active'); navAsianFood.classList.add('nav-inactive');
+                navSupermarket.classList.remove('nav-active'); navSupermarket.classList.add('nav-inactive');
+
+                if (viewName === 'schedule') {
+                    scheduleContainer.classList.remove('hidden');
+                    navSchedule.classList.add('nav-active'); navSchedule.classList.remove('nav-inactive');
+                    dateTabs.classList.remove('hidden');
+                } else if (viewName === 'restaurant') {
+                    restaurantContainer.classList.remove('hidden');
+                    navRestaurant.classList.add('nav-active'); navRestaurant.classList.remove('nav-inactive');
+                    dateTabs.classList.remove('hidden');
+                } else if (viewName === 'asianFood') {
+                    asianRestaurantContainer.classList.remove('hidden');
+                    navAsianFood.classList.add('nav-active'); navAsianFood.classList.remove('nav-inactive');
+                    dateTabs.classList.add('hidden');
+                    renderAsianFood();
+                } else if (viewName === 'supermarket') {
+                    supermarketContainer.classList.remove('hidden');
+                    navSupermarket.classList.add('nav-active'); navSupermarket.classList.remove('nav-inactive');
+                    dateTabs.classList.add('hidden');
+                    renderSupermarkets();
+                }
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
-        ];
 
-        // ---------------- Supermarket Data ----------------
-        const polishSupermarkets = [
-            {
-                name: "Asia Sources Supermarket (亞洲匯)",
-                type: "華沙亞超",
-                desc: "華沙評價極高的亞洲超市 (4.8 星)，商品種類齊全，有新鮮蔬菜、零食、冷凍食品。",
-                note: "位於華沙 Mokotów 區，離市中心稍遠，建議搭 Bolt 前往。",
-                url: "https://www.google.com/maps/search/?api=1&query=Asia+Sources+Supermarket+Warsaw"
-            },
-            {
-                name: "Haechi Shop (海獬)",
-                type: "華沙韓超",
-                desc: "韓式超市結合街頭小吃店 (4.6 星)，可以買到各類韓國泡麵、零食，還能順便吃個飯捲。",
-                note: "位於華沙市中心附近。",
-                url: "https://www.google.com/maps/search/?api=1&query=Haechi+Shop+Warsaw"
-            },
-            {
-                name: "Kuchnie Świata",
-                type: "進口超市",
-                desc: "波蘭連鎖進口超市，各大購物中心 (如 Złote Tarasy) 都有。東西較貴但方便。",
-                note: "如果在市中心急需醬料或泡麵，這是最方便的選擇。",
-                url: "https://www.google.com/maps/search/?api=1&query=Kuchnie+Swiata+Warszawa"
-            },
-            {
-                name: "Asia Deli",
-                type: "克拉科夫亞超",
-                desc: "克拉科夫舊城附近的亞洲食品店，評價不錯，適合補給。",
-                note: "Węgłowa 1, Kraków",
-                url: "https://www.google.com/maps/search/?api=1&query=Asia+Deli+Krakow"
-            },
-            {
-                name: "Żabka (青蛙超市)",
-                type: "便利商店",
-                desc: "波蘭版 7-11，到處都有。買水、熱狗堡 (Hot Dog)、三明治、零食超方便。",
-                note: "營業時間通常很長 (6:00-23:00)，週日通常也開。",
-                url: "https://www.google.com/maps/search/?api=1&query=Zabka"
+            function renderAll(index) {
+                activeDayIndex = index;
+                renderTabs();
+                renderSchedule(index);
+                renderRestaurants(index);
             }
-        ];
 
-        // ---------------- Logic (Same as before) ----------------
-        let activeDayIndex = 0;
-        let supermarketRendered = false; 
-
-        const dateTabs = document.getElementById('dateTabs');
-        const scheduleContainer = document.getElementById('scheduleView');
-        const restaurantContainer = document.getElementById('restaurantView');
-        const supermarketContainer = document.getElementById('supermarketView');
-        const navSchedule = document.getElementById('nav-schedule');
-        const navRestaurant = document.getElementById('nav-restaurant');
-        const navSupermarket = document.getElementById('nav-supermarket');
-
-        function switchView(viewName) {
-            scheduleContainer.classList.add('hidden');
-            restaurantContainer.classList.add('hidden');
-            supermarketContainer.classList.add('hidden');
-            
-            navSchedule.classList.remove('nav-active'); navSchedule.classList.add('nav-inactive');
-            navRestaurant.classList.remove('nav-active'); navRestaurant.classList.add('nav-inactive');
-            navSupermarket.classList.remove('nav-active'); navSupermarket.classList.add('nav-inactive');
-
-            if (viewName === 'schedule') {
-                scheduleContainer.classList.remove('hidden');
-                navSchedule.classList.add('nav-active'); navSchedule.classList.remove('nav-inactive');
-                dateTabs.classList.remove('hidden');
-            } else if (viewName === 'restaurant') {
-                restaurantContainer.classList.remove('hidden');
-                navRestaurant.classList.add('nav-active'); navRestaurant.classList.remove('nav-inactive');
-                dateTabs.classList.remove('hidden');
-            } else if (viewName === 'supermarket') {
-                supermarketContainer.classList.remove('hidden');
-                navSupermarket.classList.add('nav-active'); navSupermarket.classList.remove('nav-inactive');
-                dateTabs.classList.add('hidden');
-                renderSupermarkets();
+            function renderTabs() {
+                dateTabs.innerHTML = '';
+                itinerary.forEach((item, index) => {
+                    const btn = document.createElement('button');
+                    const isActive = index === activeDayIndex;
+                    btn.className = `px-4 py-2 mx-1 text-sm whitespace-nowrap rounded-t-lg transition-all duration-200 ${isActive ? 'active-tab' : 'text-gray-500 hover:text-red-600'}`;
+                    btn.innerHTML = `<div class="font-bold">${item.date}</div><div class="text-xs">${item.day}</div>`;
+                    btn.onclick = () => {
+                        renderAll(index);
+                        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                        if (!restaurantContainer.classList.contains('hidden')) switchView('restaurant');
+                        else if (!asianRestaurantContainer.classList.contains('hidden')) switchView('asianFood');
+                        else if (!scheduleContainer.classList.contains('hidden')) switchView('schedule');
+                        else switchView('schedule');
+                    };
+                    dateTabs.appendChild(btn);
+                });
             }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
 
-        function renderAll(index) {
-            activeDayIndex = index;
-            renderTabs();
-            renderSchedule(index);
-            renderRestaurants(index);
-        }
-
-        function renderTabs() {
-            dateTabs.innerHTML = '';
-            itinerary.forEach((item, index) => {
-                const btn = document.createElement('button');
-                const isActive = index === activeDayIndex;
-                btn.className = `px-4 py-2 mx-1 text-sm whitespace-nowrap rounded-t-lg transition-all duration-200 ${isActive ? 'active-tab' : 'text-gray-500 hover:text-red-600'}`;
-                btn.innerHTML = `<div class="font-bold">${item.date}</div><div class="text-xs">${item.day}</div>`;
-                btn.onclick = () => {
-                    renderAll(index);
-                    btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                    if (!restaurantContainer.classList.contains('hidden')) switchView('restaurant');
-                    else if (!scheduleContainer.classList.contains('hidden')) switchView('schedule');
-                    else switchView('schedule');
-                };
-                dateTabs.appendChild(btn);
-            });
-        }
-
-        function renderSchedule(index) {
-            const data = itinerary[index];
-            scheduleContainer.innerHTML = `
-                <div class="mb-4 animate-fade-in">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-1 pl-2 border-l-4 border-red-600">${data.city}</h2>
-                    <p class="text-sm text-gray-500 pl-3 mb-4">${data.date} (${data.day})</p>
-                </div>
-            `;
-            data.events.forEach(event => {
-                const card = document.createElement('div');
-                card.className = "bg-white p-4 rounded-xl shadow-sm mb-4 border border-gray-100 day-card";
-                card.innerHTML = `
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0 w-12 text-center mr-3">
-                            <span class="block text-sm font-bold text-gray-600">${event.time}</span>
-                            <div class="mt-2 w-10 h-10 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center mx-auto">
-                                <i class="fas ${event.icon}"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow">
-                            <h3 class="font-bold text-lg text-gray-800 leading-tight mb-1">${event.title}</h3>
-                            <p class="text-sm text-gray-600 mb-2 leading-relaxed">${event.desc}</p>
-                            ${event.note ? `<div class="bg-red-50 p-2 rounded-lg border border-red-100 mt-2"><p class="text-xs text-red-800 flex items-start"><i class="fas fa-info-circle mt-0.5 mr-1.5 flex-shrink-0"></i><span>${event.note}</span></p></div>` : ''}
-                        </div>
+            function renderSchedule(index) {
+                const data = itinerary[index];
+                scheduleContainer.innerHTML = `
+                    <div class="mb-4 animate-fade-in">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-1 pl-2 border-l-4 border-red-600">${data.city}</h2>
+                        <p class="text-sm text-gray-500 pl-3 mb-4">${data.date} (${data.day})</p>
                     </div>
                 `;
-                scheduleContainer.appendChild(card);
-            });
-        }
+                data.events.forEach(event => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-4 rounded-xl shadow-sm mb-4 border border-gray-100 day-card";
+                    card.innerHTML = `
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 w-12 text-center mr-3">
+                                <span class="block text-sm font-bold text-gray-600">${event.time}</span>
+                                <div class="mt-2 w-10 h-10 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center mx-auto">
+                                    <i class="fas ${event.icon}"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow">
+                                <h3 class="font-bold text-lg text-gray-800 leading-tight mb-1">${event.title}</h3>
+                                <p class="text-sm text-gray-600 mb-2 leading-relaxed">${event.desc}</p>
+                                ${event.note ? `<div class="bg-red-50 p-2 rounded-lg border border-red-100 mt-2"><p class="text-xs text-red-800 flex items-start"><i class="fas fa-info-circle mt-0.5 mr-1.5 flex-shrink-0"></i><span>${event.note}</span></p></div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                    scheduleContainer.appendChild(card);
+                });
+            }
 
-        function renderRestaurants(index) {
-            const data = itinerary[index];
-            let content = `
-                <div class="mb-4">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-1 pl-2 border-l-4 border-red-600">${data.date} 美食地圖</h2>
-                    <p class="text-sm text-gray-500 pl-3">點擊按鈕可直接導航</p>
-                </div>
-            `;
-            if (data.restaurants && data.restaurants.length > 0) {
-                data.restaurants.forEach(r => {
+            function renderRestaurants(index) {
+                const data = itinerary[index];
+                let content = `
+                    <div class="mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-1 pl-2 border-l-4 border-red-600">${data.date} 美食地圖</h2>
+                        <p class="text-sm text-gray-500 pl-3">點擊按鈕可直接導航</p>
+                    </div>
+                `;
+                if (data.restaurants && data.restaurants.length > 0) {
+                    data.restaurants.forEach(r => {
+                        content += `
+                            <div class="bg-white p-4 rounded-xl shadow-sm mb-4 border border-gray-100 flex flex-col relative overflow-hidden">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h3 class="font-bold text-lg text-gray-800 leading-tight">${r.name}</h3>
+                                        <div class="text-xs text-gray-500 mt-1 flex items-center">
+                                            <span class="bg-red-100 text-red-600 px-2 py-0.5 rounded mr-2">${r.type}</span>
+                                            <span class="mr-2"><i class="fas fa-coins text-yellow-500 text-xs"></i> ${r.price}</span>
+                                            <span><i class="fas fa-star text-yellow-400 text-xs"></i> ${r.rate}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">${r.desc}</p>
+                                <a href="${r.url}" target="_blank" class="mt-auto w-full bg-red-600 text-white py-2 rounded-lg text-center font-medium text-sm hover:bg-red-700 transition flex items-center justify-center">
+                                    <i class="fas fa-location-arrow mr-2"></i> 導航去這裡
+                                </a>
+                            </div>
+                        `;
+                    });
+                } else {
+                    content += `<div class="text-center py-10 text-gray-400"><i class="fas fa-utensils text-4xl mb-3"></i><p>本日以行程為主，建議周邊隨意覓食</p></div>`;
+                }
+                content += `<div class="h-8"></div>`;
+                restaurantContainer.innerHTML = content;
+            }
+
+            function renderAsianFood() {
+                if (asianRendered) return;
+                let content = `
+                    <div class="mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-1 pl-2 border-l-4 border-red-600">亞洲美食地圖</h2>
+                        <p class="text-sm text-gray-500 pl-3">想念亞洲味時的救星 (Google 評論 >1000)</p>
+                    </div>
+                `;
+                
+                let currentCity = "";
+                asianRestaurants.forEach(item => {
+                    if (item.city !== currentCity) {
+                        currentCity = item.city;
+                        content += `<h3 class="text-lg font-bold text-gray-700 mt-6 mb-2 pl-2 border-l-2 border-red-400">${currentCity}</h3>`;
+                    }
+
                     content += `
                         <div class="bg-white p-4 rounded-xl shadow-sm mb-4 border border-gray-100 flex flex-col relative overflow-hidden">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
-                                    <h3 class="font-bold text-lg text-gray-800 leading-tight">${r.name}</h3>
-                                    <div class="text-xs text-gray-500 mt-1 flex items-center">
-                                        <span class="bg-red-100 text-red-600 px-2 py-0.5 rounded mr-2">${r.type}</span>
-                                        <span class="mr-2"><i class="fas fa-coins text-yellow-500 text-xs"></i> ${r.price}</span>
-                                        <span><i class="fas fa-star text-yellow-400 text-xs"></i> ${r.rate}</span>
+                                    <h3 class="font-bold text-lg text-gray-800 leading-tight">${item.name}</h3>
+                                    <div class="text-xs mt-1 flex flex-wrap gap-2">
+                                        <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold">${item.cuisine}</span>
+                                        <span class="text-gray-500 flex items-center"><i class="fas fa-star text-yellow-400 text-xs mr-1"></i> ${item.rate}</span>
                                     </div>
                                 </div>
                             </div>
-                            <p class="text-sm text-gray-600 mb-3 line-clamp-2">${r.desc}</p>
-                            <a href="${r.url}" target="_blank" class="mt-auto w-full bg-red-600 text-white py-2 rounded-lg text-center font-medium text-sm hover:bg-red-700 transition flex items-center justify-center">
+                            <p class="text-sm text-gray-600 mb-3 leading-relaxed">${item.desc}</p>
+                            <a href="${item.url}" target="_blank" class="mt-auto w-full bg-red-600 text-white py-2 rounded-lg text-center font-medium text-sm hover:bg-red-700 transition flex items-center justify-center">
                                 <i class="fas fa-location-arrow mr-2"></i> 導航去這裡
                             </a>
                         </div>
                     `;
                 });
-            } else {
-                content += `<div class="text-center py-10 text-gray-400"><i class="fas fa-utensils text-4xl mb-3"></i><p>本日以行程為主，建議周邊隨意覓食</p></div>`;
+                content += `<div class="h-8"></div>`;
+                asianRestaurantContainer.innerHTML = content;
+                asianRendered = true;
             }
-            content += `<div class="h-8"></div>`;
-            restaurantContainer.innerHTML = content;
-        }
 
-        function renderSupermarkets() {
-            if (supermarketRendered) return;
-            let content = `
-                <div class="mb-4">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-1 pl-2 border-l-4 border-red-600">亞洲超市指南</h2>
-                    <p class="text-sm text-gray-500 pl-3">波蘭精選高評價亞超</p>
-                </div>
-            `;
-            polishSupermarkets.forEach(item => {
-                content += `
-                    <div class="bg-white p-4 rounded-xl shadow-sm mb-4 border border-gray-100 flex flex-col relative overflow-hidden">
-                        <div class="flex justify-between items-start mb-2">
-                            <div>
-                                <h3 class="font-bold text-lg text-gray-800 leading-tight">${item.name}</h3>
-                                <div class="text-xs mt-1 flex flex-wrap gap-2">
-                                    <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">${item.type}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-gray-50 p-2 rounded-lg border border-gray-100 my-2">
-                            <p class="text-xs text-gray-700 font-bold flex items-start"><i class="fas fa-info-circle mt-0.5 mr-1.5 flex-shrink-0"></i><span>${item.note}</span></p>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-3 leading-relaxed">${item.desc}</p>
-                        <a href="${item.url}" target="_blank" class="mt-auto w-full bg-red-600 text-white py-2 rounded-lg text-center font-medium text-sm hover:bg-red-700 transition flex items-center justify-center shadow-md">
-                            <i class="fas fa-search mr-2"></i> 搜尋這家店
-                        </a>
+            function renderSupermarkets() {
+                if (supermarketRendered) return;
+                let content = `
+                    <div class="mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-1 pl-2 border-l-4 border-red-600">亞洲超市指南</h2>
+                        <p class="text-sm text-gray-500 pl-3">波蘭精選高評價亞超 (Google 4.5星+)</p>
                     </div>
                 `;
-            });
-            content += `<div class="h-8"></div>`;
-            supermarketContainer.innerHTML = content;
-            supermarketRendered = true;
-        }
+                polishSupermarkets.forEach(item => {
+                    content += `
+                        <div class="bg-white p-4 rounded-xl shadow-sm mb-4 border border-gray-100 flex flex-col relative overflow-hidden">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 class="font-bold text-lg text-gray-800 leading-tight">${item.name}</h3>
+                                    <div class="text-xs mt-1 flex flex-wrap gap-2">
+                                        <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">${item.type}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-2 rounded-lg border border-gray-100 my-2">
+                                <p class="text-xs text-gray-700 font-bold flex items-start"><i class="fas fa-info-circle mt-0.5 mr-1.5 flex-shrink-0"></i><span>${item.note}</span></p>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-3 leading-relaxed">${item.desc}</p>
+                            <a href="${item.url}" target="_blank" class="mt-auto w-full bg-red-600 text-white py-2 rounded-lg text-center font-medium text-sm hover:bg-red-700 transition flex items-center justify-center shadow-md">
+                                <i class="fas fa-search mr-2"></i> 搜尋這家店
+                            </a>
+                        </div>
+                    `;
+                });
+                content += `<div class="h-8"></div>`;
+                supermarketContainer.innerHTML = content;
+                supermarketRendered = true;
+            }
 
-        renderAll(0);
+            renderAll(0);
+        });
     </script>
 </body>
 </html>
-```
