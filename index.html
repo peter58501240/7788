@@ -18,6 +18,14 @@
         .nav-inactive { color: #9ca3af; }
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
         header { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 pb-24 select-none">
@@ -238,8 +246,8 @@
                     price: "zł 25-50",
                     rate: "4.6 (1000+)",
                     desc: "韓式飯捲、辣炒年糕，也是補貨韓國泡麵的好地方。",
-                    addr: "Nowy Świat (check map), Warsaw",
-                    url: "https://www.google.com/maps/search/?api=1&query=Haechi+Shop+Warsaw"
+                    addr: "Widok 19, Warsaw",
+                    url: "https://www.google.com/maps/search/?api=1&query=Haechi+Shop+Widok+19"
                 },
 
                 // Wrocław (Brassel area)
@@ -307,11 +315,18 @@
                     url: "https://www.google.com/maps/search/?api=1&query=Asia+Sources+Supermarket+Warsaw"
                 },
                 {
-                    name: "Haechi Shop (海獬)",
-                    type: "華沙韓超 (Google 4.6星)",
-                    desc: "韓式超市結合街頭小吃店，可以買到各類韓國泡麵、零食，還能順便吃個飯捲。",
-                    note: "位於華沙市中心附近。",
-                    url: "https://www.google.com/maps/search/?api=1&query=Haechi+Shop+Warsaw"
+                    name: "Targowisko Bakalarska (Asian Market)",
+                    type: "華沙最大亞洲市集 (Google 4000+則評論)",
+                    desc: "這不是單一超市，而是華沙傳奇的「亞洲市集」！聚集了數十家亞洲食品批發店、生鮮蔬果、海鮮肉品，還有非常道地的越南河粉攤。",
+                    note: "位於華沙 Włochy 區 (Bakalarska 11)，離市中心較遠，強烈建議搭 Bolt 或 Uber 前往。適合想大採購的人。",
+                    url: "https://www.google.com/maps/search/?api=1&query=Targowisko+Bakalarska+Warsaw"
+                },
+                {
+                    name: "Haechi Shop (韓式小吃與超市)",
+                    type: "市中心韓式補給站",
+                    desc: "這是由原來的 Wawamart 轉型而成的複合式店鋪，結合了韓式街頭小吃 (Bistro) 與商品販售區。如果找不到招牌，請認明 'HAECHI'。",
+                    note: "★ 地址更新：Widok 19, Warsaw (近 Centrum 地鐵站)。非常方便，吃完飯順便買泡麵。",
+                    url: "https://www.google.com/maps/search/?api=1&query=Haechi+Shop+Widok+19+Warsaw"
                 },
                 {
                     name: "Asia Deli",
@@ -321,18 +336,11 @@
                     url: "https://www.google.com/maps/search/?api=1&query=Asia+Deli+Krakow"
                 },
                 {
-                    name: "Kuchnie Świata",
+                    name: "Kuchnie Świata (Złote Tarasy 分店)",
                     type: "進口超市 (連鎖)",
-                    desc: "波蘭連鎖進口超市，各大購物中心 (如 Złote Tarasy) 都有。東西較貴但方便。",
-                    note: "如果在市中心急需醬料或泡麵，這是最方便的選擇。",
-                    url: "https://www.google.com/maps/search/?api=1&query=Kuchnie+Swiata+Warszawa"
-                },
-                {
-                    name: "Żabka (青蛙超市)",
-                    type: "便利商店",
-                    desc: "波蘭版 7-11，到處都有。買水、熱狗堡 (Hot Dog)、三明治、零食超方便。",
-                    note: "營業時間通常很長 (6:00-23:00)，週日通常也開。",
-                    url: "https://www.google.com/maps/search/?api=1&query=Zabka"
+                    desc: "這間店位於「金色梯田 (Złote Tarasy)」購物中心內，是最容易到達的分店。如果想買日韓調味料或零食，這裡很方便。",
+                    note: "★ 位置指引：請下到 B1 (Level -1)，通常在超市或停車場入口附近。",
+                    url: "https://www.google.com/maps/search/?api=1&query=Kuchnie+Swiata+Zlote+Tarasy"
                 }
             ];
 
@@ -449,7 +457,7 @@
             function renderRestaurants(index) {
                 const data = itinerary[index];
                 let content = `
-                    <div class="mb-4">
+                    <div class="mb-4 animate-fade-in">
                         <h2 class="text-2xl font-bold text-gray-800 mb-1 pl-2 border-l-4 border-red-600">${data.date} 美食地圖</h2>
                         <p class="text-sm text-gray-500 pl-3">點擊按鈕可直接導航</p>
                     </div>
@@ -485,7 +493,7 @@
             function renderAsianFood() {
                 if (asianRendered) return;
                 let content = `
-                    <div class="mb-4">
+                    <div class="mb-4 animate-fade-in">
                         <h2 class="text-2xl font-bold text-gray-800 mb-1 pl-2 border-l-4 border-red-600">亞洲美食地圖</h2>
                         <p class="text-sm text-gray-500 pl-3">想念亞洲味時的救星 (Google 評論 >1000)</p>
                     </div>
@@ -524,7 +532,7 @@
             function renderSupermarkets() {
                 if (supermarketRendered) return;
                 let content = `
-                    <div class="mb-4">
+                    <div class="mb-4 animate-fade-in">
                         <h2 class="text-2xl font-bold text-gray-800 mb-1 pl-2 border-l-4 border-red-600">亞洲超市指南</h2>
                         <p class="text-sm text-gray-500 pl-3">波蘭精選高評價亞超 (Google 4.5星+)</p>
                     </div>
