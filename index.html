@@ -5,82 +5,130 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>波蘭三城聖誕遊</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
-        body { font-family: 'Noto Sans TC', sans-serif; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
-        .day-card { transition: all 0.3s ease; }
-        .hidden-content { display: none; }
-        .active-tab { border-bottom: 3px solid #dc2626; color: #dc2626; font-weight: 700; background-color: #fef2f2; }
+        
+        body { 
+            font-family: 'Noto Sans TC', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+            overscroll-behavior-y: none; 
+            background-color: #f9fafb;
+        }
+        
+        /* Custom Scrollbar Hiding */
         .scroll-hide::-webkit-scrollbar { display: none; }
         .scroll-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        .nav-active { color: #dc2626; font-weight: bold; }
-        .nav-inactive { color: #9ca3af; }
+        
+        /* Navigation Styles */
+        .active-tab { 
+            border-bottom: 3px solid #dc2626; 
+            color: #dc2626; 
+            font-weight: 700; 
+            background-color: #fef2f2; 
+        }
+        .nav-active { 
+            color: #dc2626; 
+            font-weight: bold; 
+        }
+        .nav-inactive { 
+            color: #9ca3af; 
+        }
+        
+        /* Safe Area for iPhone Home Indicator */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
-        header { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-        /* Animation */
+        
+        header { 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); 
+        }
+
+        /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in {
-            animation: fadeIn 0.3s ease-out forwards;
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        /* Card Hover Effects */
+        .interactive-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .interactive-card:active {
+            transform: scale(0.98);
+        }
+
+        /* Currency Input Styles */
+        .currency-input {
+            transition: all 0.2s;
+        }
+        .currency-input:focus-within {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 pb-24 select-none">
+<body class="bg-gray-50 text-gray-800 pb-28 select-none">
 
-    <!-- Header -->
+    <!-- Header (Fixed) -->
     <header class="fixed top-0 left-0 right-0 bg-white z-50">
-        <div class="px-4 py-3 bg-red-800 text-white flex justify-between items-center shadow-sm">
+        <!-- Top Bar -->
+        <div class="px-4 py-3 bg-gradient-to-r from-red-800 to-red-700 text-white flex justify-between items-center shadow-md">
             <div class="flex items-center">
-                <div class="mr-3 text-2xl">🇵🇱</div>
+                <div class="mr-3 text-2xl filter drop-shadow-md">🇵🇱</div>
                 <div>
-                    <h1 class="text-lg font-bold tracking-wide">波蘭三城聖誕遊</h1>
-                    <p class="text-xs text-red-200">12/25 - 12/31 (克拉科夫/華沙/弗羅茨瓦夫)</p>
+                    <h1 class="text-lg font-bold tracking-wide text-white">波蘭三城聖誕遊</h1>
+                    <p class="text-xs text-red-100 font-medium">12/25 - 12/31 (克拉科夫/華沙/弗羅茨瓦夫)</p>
                 </div>
             </div>
         </div>
         
         <!-- Date Slider -->
-        <div class="flex overflow-x-auto whitespace-nowrap bg-white border-b scroll-hide px-2 py-2" id="dateTabs">
+        <div class="flex overflow-x-auto whitespace-nowrap bg-white border-b scroll-hide px-2 py-1 shadow-sm" id="dateTabs">
             <!-- Tabs will be injected by JS -->
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 pt-44 max-w-md pb-4 relative min-h-screen">
+    <main class="container mx-auto px-4 pt-36 max-w-md relative min-h-screen">
         
-        <div id="scheduleView" class="animate-fade-in"></div>
-        <div id="restaurantView" class="hidden animate-fade-in"></div>
-        <div id="asianRestaurantView" class="hidden animate-fade-in"></div>
-        <div id="supermarketView" class="hidden animate-fade-in"></div>
+        <div id="scheduleView" class="animate-fade-in pb-4"></div>
+        <div id="restaurantView" class="hidden animate-fade-in pb-4"></div>
+        <div id="currencyView" class="hidden animate-fade-in pb-4"></div>
+        <div id="asianRestaurantView" class="hidden animate-fade-in pb-4"></div>
+        <div id="supermarketView" class="hidden animate-fade-in pb-4"></div>
 
     </main>
 
-    <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center py-2 pb-safe z-50 shadow-lg text-xs">
-        <button id="nav-schedule" class="flex flex-col items-center w-1/4 py-2 nav-active">
+    <!-- Bottom Navigation (Fixed) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 flex justify-between items-center py-2 pb-safe z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] text-[10px] sm:text-xs px-1">
+        <button id="nav-schedule" class="flex-1 flex flex-col items-center py-2 nav-active active:scale-95 transition-transform">
             <i class="fas fa-calendar-alt text-xl mb-1"></i>
             <span>每日行程</span>
         </button>
-        <button id="nav-restaurant" class="flex flex-col items-center w-1/4 py-2 nav-inactive">
+        <button id="nav-restaurant" class="flex-1 flex flex-col items-center py-2 nav-inactive active:scale-95 transition-transform">
             <i class="fas fa-utensils text-xl mb-1"></i>
             <span>當日美食</span>
         </button>
-        <button id="nav-asianFood" class="flex flex-col items-center w-1/4 py-2 nav-inactive">
+        <!-- New Currency Button -->
+        <button id="nav-currency" class="flex-1 flex flex-col items-center py-2 nav-inactive active:scale-95 transition-transform">
+            <i class="fas fa-calculator text-xl mb-1"></i>
+            <span>匯率換算</span>
+        </button>
+        <button id="nav-asianFood" class="flex-1 flex flex-col items-center py-2 nav-inactive active:scale-95 transition-transform">
             <i class="fas fa-globe-asia text-xl mb-1"></i>
             <span>亞洲餐廳</span>
         </button>
-        <button id="nav-supermarket" class="flex flex-col items-center w-1/4 py-2 nav-inactive">
+        <button id="nav-supermarket" class="flex-1 flex flex-col items-center py-2 nav-inactive active:scale-95 transition-transform">
             <i class="fas fa-shopping-basket text-xl mb-1"></i>
             <span>亞洲超市</span>
         </button>
     </nav>
 
     <!-- Floating Action Button for Map -->
-    <a href="https://www.google.com/maps" target="_blank" id="floatMapBtn" class="fixed bottom-20 right-6 bg-red-700 text-white w-12 h-12 rounded-full shadow-xl hover:bg-red-800 transition transform active:scale-95 flex items-center justify-center z-40 opacity-90">
-        <i class="fas fa-map-marked-alt text-lg"></i>
+    <a href="https://www.google.com/maps/search/?api=1&query=Poland" target="_blank" id="floatMapBtn" class="fixed bottom-24 right-5 bg-red-700 text-white w-14 h-14 rounded-full shadow-2xl hover:bg-red-800 transition transform active:scale-90 flex items-center justify-center z-40 opacity-90 border-2 border-white">
+        <i class="fas fa-map-marked-alt text-xl"></i>
     </a>
 
     <script>
@@ -91,14 +139,14 @@
                     date: "12/25", day: "週四", city: "Kraków",
                     events: [
                         { time: "16:41", title: "抵達克拉科夫", icon: "fa-train", desc: "從布拉格搭火車抵達 Kraków Główny → 飯店 Check-in", note: "建議搭 tram (電車) 或走路，車站離舊城很近。車站超市可買水。" },
-                        { time: "18:00", title: "舊城聖誕市集", icon: "fa-tree", desc: "Rynek Główny 廣場漫步，感受聖誕氛圍", note: "聖誕節當天商店多休息，但市集攤位會開" },
+                        { time: "18:00", title: "Rynek Główny中央集市廣場", icon: "fa-tree", desc: "參觀聖母聖殿 (St Mary's Basilica)，漫步廣場", note: "聖誕市集。聖誕節當天商店多休息，但市集攤位會開" },
                         { time: "晚餐", title: "聖誕夜晚餐", icon: "fa-utensils", desc: "Morskie Oko (波蘭山區菜) 或 Gościnna Chata", note: "第一晚適合氣氛佳的傳統餐廳，務必預約" },
                         { time: "20:00", title: "夜遊紡織會館", icon: "fa-moon", desc: "在 Cloth Hall 迴廊散步，拍點燈後的聖瑪莉教堂", note: "吃飽後散步消化，就在餐廳附近，不用搭車" }
                     ],
                     restaurants: [
-                        { name: "Morskie Oko", type: "晚餐首選", price: "zł 60-100", rate: "4.7 (7,800+ 則評論)", desc: "高地人風格木造餐廳，氣氛極佳，必點酸湯、餃子", addr: "Plac Szczepański 8, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Morskie+Oko+Krakow" },
-                        { name: "Gościnna Chata", type: "晚餐備選1", price: "zł 50-90", rate: "4.5 (3,200+ 則評論)", desc: "傳統波蘭鄉村菜，溫馨舒適，就在舊城區", addr: "Sławkowska 10, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Goscinna+Chata+Krakow" },
-                        { name: "Pod Baranem", type: "晚餐備選2", price: "zł 70-120", rate: "4.6 (2,600+ 則評論)", desc: "就在瓦維爾城堡旁，評價極高的傳統波蘭菜，適合家庭聚餐", addr: "Świętej Gertrudy 21, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Pod+Baranem+Krakow" }
+                        { name: "Morskie Oko", type: "晚餐首選", price: "zł 60-100", rate: "4.7 (7,800+ 評論)", desc: "高地人風格木造餐廳，氣氛極佳，必點酸湯、餃子", addr: "Plac Szczepański 8, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Morskie+Oko+Krakow" },
+                        { name: "Gościnna Chata", type: "晚餐備選1", price: "zł 50-90", rate: "4.5 (3,200+ 評論)", desc: "傳統波蘭鄉村菜，溫馨舒適，就在舊城區", addr: "Sławkowska 10, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Goscinna+Chata+Krakow" },
+                        { name: "Pod Baranem", type: "晚餐備選2", price: "zł 70-120", rate: "4.6 (2,600+ 評論)", desc: "就在瓦維爾城堡旁，評價極高的傳統波蘭菜，適合家庭聚餐", addr: "Świętej Gertrudy 21, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Pod+Baranem+Krakow" }
                     ]
                 },
                 {
@@ -112,9 +160,9 @@
                         { time: "20:00", title: "猶太區小酌", icon: "fa-glass-cheers", desc: "Alchemia 或 Singera，感受波蘭獨特酒吧氛圍", note: "這區晚上氣氛很好，就在 Plac Nowy 旁，喝杯伏特加或熱紅酒" }
                     ],
                     restaurants: [
-                        { name: "Zazie Bistro", type: "晚餐首選", price: "zł 60-120", rate: "4.8 (4,100+ 則評論)", desc: "米其林推薦，位於猶太區，CP值超高的法式料理", addr: "Józefa 34, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Zazie+Bistro+Krakow" },
-                        { name: "Restauracja Starka", type: "晚餐備選1", price: "zł 60-100", rate: "4.7 (3,900+ 則評論)", desc: "自製伏特加聞名，燉肉料理很強，氣氛熱鬧", addr: "Józefa 14, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Restauracja+Starka+Krakow" },
-                        { name: "Pod Wawelem", type: "晚餐備選2", price: "zł 40-70", rate: "4.5 (13,000+ 則評論)", desc: "城堡腳下，以「巨無霸炸豬排」跟啤酒聞名，份量驚人", addr: "św. Gertrudy 26-29, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Pod+Wawelem+Krakow" }
+                        { name: "Zazie Bistro", type: "晚餐首選", price: "zł 60-120", rate: "4.8 (4,100+ 評論)", desc: "米其林推薦，位於猶太區，CP值超高的法式料理", addr: "Józefa 34, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Zazie+Bistro+Krakow" },
+                        { name: "Restauracja Starka", type: "晚餐備選1", price: "zł 60-100", rate: "4.7 (3,900+ 評論)", desc: "自製伏特加聞名，燉肉料理很強，氣氛熱鬧", addr: "Józefa 14, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Restauracja+Starka+Krakow" },
+                        { name: "Pod Wawelem", type: "晚餐備選2", price: "zł 40-70", rate: "4.5 (13,000+ 評論)", desc: "城堡腳下，以「巨無霸炸豬排」跟啤酒聞名，份量驚人", addr: "św. Gertrudy 26-29, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Pod+Wawelem+Krakow" }
                     ]
                 },
                 {
@@ -126,9 +174,9 @@
                         { time: "20:00", title: "維斯瓦河畔夜景", icon: "fa-water", desc: "沿著河岸看 Wawel 城堡夜景", note: "從主廣場沿 Grodzka 街走到河邊，非常浪漫" }
                     ],
                     restaurants: [
-                        { name: "Szara Gęś", type: "晚餐首選", price: "zł 100-200", rate: "4.6 (3,800+ 則評論)", desc: "「灰鵝」餐廳，主廣場旁，裝潢華麗，現代波蘭精緻料理", addr: "Rynek Główny 17, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Szara+Ges+Krakow" },
-                        { name: "Czarna Kaczka", type: "晚餐備選1", price: "zł 60-100", rate: "4.7 (4,500+ 則評論)", desc: "「黑鴨」餐廳，招牌是烤鴨與馬鈴薯煎餅", addr: "Poselska 22, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Czarna+Kaczka+Krakow" },
-                        { name: "Miód Malina", type: "晚餐備選2", price: "zł 60-100", rate: "4.6 (2,200+ 則評論)", desc: "溫馨風格，炸豬排與野菇湯很有名", addr: "Grodzka 40, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Miod+Malina+Krakow" }
+                        { name: "Szara Gęś", type: "晚餐首選", price: "zł 100-200", rate: "4.6 (3,800+ 評論)", desc: "「灰鵝」餐廳，主廣場旁，裝潢華麗，現代波蘭精緻料理", addr: "Rynek Główny 17, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Szara+Ges+Krakow" },
+                        { name: "Czarna Kaczka", type: "晚餐備選1", price: "zł 60-100", rate: "4.7 (4,500+ 評論)", desc: "「黑鴨」餐廳，招牌是烤鴨與馬鈴薯煎餅", addr: "Poselska 22, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Czarna+Kaczka+Krakow" },
+                        { name: "Miód Malina", type: "晚餐備選2", price: "zł 60-100", rate: "4.6 (2,200+ 評論)", desc: "溫馨風格，炸豬排與野菇湯很有名", addr: "Grodzka 40, Kraków", url: "https://www.google.com/maps/search/?api=1&query=Miod+Malina+Krakow" }
                     ]
                 },
                 {
@@ -143,9 +191,9 @@
                         { time: "20:00", title: "皇家大道散步", icon: "fa-walking", desc: "從城堡廣場沿 Krakowskie Przedmieście 散步", note: "這是華沙聖誕燈飾最密集的一條街，適合飯後消化" }
                     ],
                     restaurants: [
-                        { name: "Zapiecek (Polskie Pierogarnie)", type: "晚餐首選", price: "zł 40-60", rate: "4.4 (15,000+ 則評論)", desc: "華沙到處都有的餃子名店，酸湯 Żurek 必點", addr: "Old Town, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Zapiecek+Warsaw" },
-                        { name: "Specjały Regionalne", type: "午餐/晚餐備選", price: "zł 50-80", rate: "4.5 (3,300+ 則評論)", desc: "皇家大道上的名店，食材強調在地天然", addr: "Nowy Świat 44, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Specjaly+Regionalne+Warsaw" },
-                        { name: "Gościniec Polskie Pierogi", type: "晚餐備選2", price: "zł 40-70", rate: "4.6 (6,800+ 則評論)", desc: "就在老城區入口，也是吃餃子和傳統菜的好地方", addr: "Podwale 19, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Gosciniec+Polskie+Pierogi+Warsaw" }
+                        { name: "Zapiecek (Polskie Pierogarnie)", type: "晚餐首選", price: "zł 40-60", rate: "4.4 (15,000+ 評論)", desc: "華沙到處都有的餃子名店，酸湯 Żurek 必點", addr: "Old Town, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Zapiecek+Warsaw" },
+                        { name: "Specjały Regionalne", type: "午餐/晚餐備選", price: "zł 50-80", rate: "4.5 (3,300+ 評論)", desc: "皇家大道上的名店，食材強調在地天然", addr: "Nowy Świat 44, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Specjaly+Regionalne+Warsaw" },
+                        { name: "Gościniec Polskie Pierogi", type: "晚餐備選2", price: "zł 40-70", rate: "4.6 (6,800+ 評論)", desc: "就在老城區入口，也是吃餃子和傳統菜的好地方", addr: "Podwale 19, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Gosciniec+Polskie+Pierogi+Warsaw" }
                     ]
                 },
                 {
@@ -160,9 +208,9 @@
                         { time: "20:30", title: "華沙夜景", icon: "fa-city", desc: "如果還有體力，回市中心看摩天樓夜景", note: "Rondo ONZ 附近的現代建築群晚上很美" }
                     ],
                     restaurants: [
-                        { name: "Stary Dom", type: "晚餐首選", price: "zł 80-150", rate: "4.8 (10,000+ 則評論)", desc: "華沙極富盛名的傳統餐廳，塔塔牛肉會有廚師推車到桌邊現拌", addr: "Puławska 104/106, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Restauracja+Stary+Dom+Warsaw" },
-                        { name: "Restauracja Różana", type: "晚餐備選1", price: "zł 80-150", rate: "4.7 (4,500+ 則評論)", desc: "極度優雅、充滿鮮花的浪漫餐廳，適合約會", addr: "Chocimska 7, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Restauracja+Rozana+Warsaw" },
-                        { name: "Hala Koszyki", type: "午餐/晚餐備選2", price: "zł 30-70", rate: "4.6 (22,000+ 則評論)", desc: "由老市場改建的時髦美食大廳，氣氛很好，選擇多", addr: "Koszykowa 63, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Hala+Koszyki+Warsaw" }
+                        { name: "Stary Dom", type: "晚餐首選", price: "zł 80-150", rate: "4.8 (10,000+ 評論)", desc: "華沙極富盛名的傳統餐廳，塔塔牛肉會有廚師推車到桌邊現拌", addr: "Puławska 104/106, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Restauracja+Stary+Dom+Warsaw" },
+                        { name: "Restauracja Różana", type: "晚餐備選1", price: "zł 80-150", rate: "4.7 (4,500+ 評論)", desc: "極度優雅、充滿鮮花的浪漫餐廳，適合約會", addr: "Chocimska 7, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Restauracja+Rozana+Warsaw" },
+                        { name: "Hala Koszyki", type: "午餐/晚餐備選2", price: "zł 30-70", rate: "4.6 (22,000+ 評論)", desc: "由老市場改建的時髦美食大廳，氣氛很好，選擇多", addr: "Koszykowa 63, Warsaw", url: "https://www.google.com/maps/search/?api=1&query=Hala+Koszyki+Warsaw" }
                     ]
                 },
                 {
@@ -177,9 +225,9 @@
                         { time: "20:00", title: "座堂島夜遊", icon: "fa-church", desc: "散步去 Ostrów Tumski (座堂島)", note: "晚上非常寧靜神聖，運氣好可以看到提燈人 (Lamplighter)" }
                     ],
                     restaurants: [
-                        { name: "Kurna Chata", type: "晚餐首選", price: "zł 40-70", rate: "4.5 (6,200+ 則評論)", desc: "裝潢像傳統農舍，菜色道地，價格親民", addr: "Odrzańska 17, Wrocław", url: "https://www.google.com/maps/search/?api=1&query=Kurna+Chata+Wroclaw" },
-                        { name: "Piwnica Świdnicka", type: "晚餐備選1", price: "zł 60-100", rate: "4.4 (1,700+ 則評論)", desc: "歐洲最古老的餐廳之一，位於舊市政廳地下", addr: "Rynek Ratusz 1, Wrocław", url: "https://www.google.com/maps/search/?api=1&query=Piwnica+Swidnicka+Wroclaw" },
-                        { name: "Konspira", type: "晚餐備選2", price: "zł 40-70", rate: "4.7 (7,800+ 則評論)", desc: "共產時代主題餐廳，食物份量大又好吃，很有特色", addr: "Plac Solny 11, Wrocław", url: "https://www.google.com/maps/search/?api=1&query=Konspira+Wroclaw" }
+                        { name: "Kurna Chata", type: "晚餐首選", price: "zł 40-70", rate: "4.5 (6,200+ 評論)", desc: "裝潢像傳統農舍，菜色道地，價格親民", addr: "Odrzańska 17, Wrocław", url: "https://www.google.com/maps/search/?api=1&query=Kurna+Chata+Wroclaw" },
+                        { name: "Piwnica Świdnicka", type: "晚餐備選1", price: "zł 60-100", rate: "4.4 (1,700+ 評論)", desc: "歐洲最古老的餐廳之一，位於舊市政廳地下", addr: "Rynek Ratusz 1, Wrocław", url: "https://www.google.com/maps/search/?api=1&query=Piwnica+Swidnicka+Wroclaw" },
+                        { name: "Konspira", type: "晚餐備選2", price: "zł 40-70", rate: "4.7 (7,800+ 評論)", desc: "共產時代主題餐廳，食物份量大又好吃，很有特色", addr: "Plac Solny 11, Wrocław", url: "https://www.google.com/maps/search/?api=1&query=Konspira+Wroclaw" }
                     ]
                 },
                 {
@@ -198,109 +246,88 @@
 
             // ---------------- Asian Restaurant Data ----------------
             const asianRestaurants = [
-                // Warsaw (Mariensztat 8 area)
+                // Warsaw
                 {
-                    city: "Warsaw (Mariensztat 8)",
+                    city: "Warsaw",
                     name: "Pełną Parą na Powiślu",
                     cuisine: "Dim Sum / 亞洲融合",
                     price: "zł 40-70",
                     rate: "4.5 (1800+)",
-                    desc: "離您飯店最近 (步行約 10-12 分鐘)，位於 Elektrownia Powiśle 內，環境時髦，蒸餃非常有名。",
-                    addr: "Elektrownia Powiśle, Zajęcza 2B, Warsaw",
+                    desc: "離飯店步行約 10-12 分鐘，位於 Elektrownia Powiśle 內，環境時髦，蒸餃非常有名。",
                     url: "https://www.google.com/maps/search/?api=1&query=Pelna+Para+Powisle"
                 },
                 {
-                    city: "Warsaw (Mariensztat 8)",
+                    city: "Warsaw",
                     name: "Thaisty",
                     cuisine: "泰式料理",
                     price: "zł 40-80",
                     rate: "4.6 (3000+)",
                     desc: "華沙最紅的泰式餐廳之一，口味正宗，距離飯店約 2 公里 (建議搭 Bolt)。",
-                    addr: "plac Bankowy 4, Warsaw",
                     url: "https://www.google.com/maps/search/?api=1&query=Thaisty+Warsaw"
                 },
                 {
-                    city: "Warsaw (Mariensztat 8)",
+                    city: "Warsaw",
                     name: "Uki Uki",
                     cuisine: "日式烏龍麵",
                     price: "zł 35-60",
                     rate: "4.7 (3000+)",
                     desc: "手工烏龍麵名店，湯頭濃郁，經常排隊。",
-                    addr: "Krucza 23/31, Warsaw",
                     url: "https://www.google.com/maps/search/?api=1&query=Uki+Uki+Warsaw"
                 },
                 {
-                    city: "Warsaw (Mariensztat 8)",
+                    city: "Warsaw",
                     name: "To To Pho",
                     cuisine: "越南河粉",
                     price: "zł 30-50",
                     rate: "4.3 (2400+)",
                     desc: "想喝熱湯的首選，牛肉河粉份量足，CP值高。",
-                    addr: "Chmielna 5/7, Warsaw",
                     url: "https://www.google.com/maps/search/?api=1&query=To+To+Pho+Warsaw"
                 },
+                // Wrocław
                 {
-                    city: "Warsaw (Mariensztat 8)",
-                    name: "Haechi Shop",
-                    cuisine: "韓式小吃",
-                    price: "zł 25-50",
-                    rate: "4.6 (1000+)",
-                    desc: "韓式飯捲、辣炒年糕，也是補貨韓國泡麵的好地方。",
-                    addr: "Widok 19, Warsaw",
-                    url: "https://www.google.com/maps/search/?api=1&query=Haechi+Shop+Widok+19"
-                },
-
-                // Wrocław (Brassel area)
-                {
-                    city: "Wrocław (Brassel)",
+                    city: "Wrocław",
                     name: "Osiem Misek",
                     cuisine: "亞洲融合 / 包子",
                     price: "zł 30-60",
                     rate: "4.7 (3000+)",
                     desc: "弗羅茨瓦夫必吃！刈包 (Bao) 和叻沙麵非常強。",
-                    addr: "Włodkowica 27, Wrocław",
                     url: "https://www.google.com/maps/search/?api=1&query=Osiem+Misek+Wroclaw"
                 },
                 {
-                    city: "Wrocław (Brassel)",
+                    city: "Wrocław",
                     name: "Panda Ramen",
                     cuisine: "拉麵",
                     price: "zł 35-55",
                     rate: "4.6 (2000+)",
                     desc: "當地非常有名的拉麵店，湯頭選擇多。",
-                    addr: "Białoskórnicza 17/18, Wrocław",
                     url: "https://www.google.com/maps/search/?api=1&query=Panda+Ramen+Wroclaw"
                 },
                 {
-                    city: "Wrocław (Brassel)",
+                    city: "Wrocław",
                     name: "Chingu Korean BBQ",
                     cuisine: "韓式烤肉",
                     price: "zł 50-90",
                     rate: "4.7 (1500+)",
                     desc: "想大口吃肉的首選，評價極高的韓式料理。",
-                    addr: "Włodkowica 19, Wrocław",
                     url: "https://www.google.com/maps/search/?api=1&query=Chingu+Korean+BBQ+Wroclaw"
                 },
-
                 // Kraków
                 {
-                    city: "Kraków (Old Town)",
+                    city: "Kraków",
                     name: "Urara Sushi",
                     cuisine: "日式料理 / 壽司",
                     price: "zł 50-100",
                     rate: "4.7 (1500+)",
                     desc: "舊城區內的高品質日料，想念米飯時的好去處。",
-                    addr: "Świętego Tomasza 19, Kraków",
                     url: "https://www.google.com/maps/search/?api=1&query=Urara+Sushi+Krakow"
                 },
                 {
-                    city: "Kraków (Old Town)",
+                    city: "Kraków",
                     name: "Ramen People",
                     cuisine: "拉麵",
                     price: "zł 35-50",
                     rate: "4.6 (1200+)",
                     desc: "猶太區附近的文青拉麵店，適合冬天暖胃。",
-                    addr: "Czysta 8, Kraków",
                     url: "https://www.google.com/maps/search/?api=1&query=Ramen+People+Krakow"
                 }
             ];
@@ -315,31 +342,31 @@
                     url: "https://www.google.com/maps/search/?api=1&query=Asia+Sources+Supermarket+Warsaw"
                 },
                 {
-                    name: "Targowisko Bakalarska (Asian Market)",
-                    type: "華沙最大亞洲市集 (Google 4000+則評論)",
-                    desc: "這不是單一超市，而是華沙傳奇的「亞洲市集」！聚集了數十家亞洲食品批發店、生鮮蔬果、海鮮肉品，還有非常道地的越南河粉攤。",
-                    note: "位於華沙 Włochy 區 (Bakalarska 11)，離市中心較遠，強烈建議搭 Bolt 或 Uber 前往。適合想大採購的人。",
+                    name: "Targowisko Bakalarska",
+                    type: "華沙最大亞洲市集",
+                    desc: "這不是單一超市，而是傳奇的「亞洲市集」！聚集了數十家亞洲食品批發店、生鮮蔬果、海鮮肉品，還有非常道地的越南河粉攤。",
+                    note: "位於華沙 Włochy 區，離市中心較遠，強烈建議搭 Bolt。適合想大採購的人。",
                     url: "https://www.google.com/maps/search/?api=1&query=Targowisko+Bakalarska+Warsaw"
                 },
                 {
-                    name: "Haechi Shop (韓式小吃與超市)",
+                    name: "Haechi Shop",
                     type: "市中心韓式補給站",
-                    desc: "這是由原來的 Wawamart 轉型而成的複合式店鋪，結合了韓式街頭小吃 (Bistro) 與商品販售區。如果找不到招牌，請認明 'HAECHI'。",
-                    note: "★ 地址更新：Widok 19, Warsaw (近 Centrum 地鐵站)。非常方便，吃完飯順便買泡麵。",
+                    desc: "結合了韓式街頭小吃 (Bistro) 與商品販售區。如果找不到招牌，請認明 'HAECHI'。",
+                    note: "地址：Widok 19, Warsaw (近 Centrum 地鐵站)。非常方便，吃完飯順便買泡麵。",
                     url: "https://www.google.com/maps/search/?api=1&query=Haechi+Shop+Widok+19+Warsaw"
                 },
                 {
                     name: "Asia Deli",
-                    type: "克拉科夫亞超 (Google 4.5星)",
+                    type: "克拉科夫亞超",
                     desc: "克拉科夫舊城附近的亞洲食品店，評價不錯，適合補給。",
                     note: "Węgłowa 1, Kraków",
                     url: "https://www.google.com/maps/search/?api=1&query=Asia+Deli+Krakow"
                 },
                 {
-                    name: "Kuchnie Świata (Złote Tarasy 分店)",
+                    name: "Kuchnie Świata (Złote Tarasy)",
                     type: "進口超市 (連鎖)",
-                    desc: "這間店位於「金色梯田 (Złote Tarasy)」購物中心內，是最容易到達的分店。如果想買日韓調味料或零食，這裡很方便。",
-                    note: "★ 位置指引：請下到 B1 (Level -1)，通常在超市或停車場入口附近。",
+                    desc: "位於「金色梯田」購物中心內，是最容易到達的分店。如果想買日韓調味料或零食，這裡很方便。",
+                    note: "位置指引：請下到 B1，通常在超市或停車場入口附近。",
                     url: "https://www.google.com/maps/search/?api=1&query=Kuchnie+Swiata+Zlote+Tarasy"
                 }
             ];
@@ -348,33 +375,37 @@
             let activeDayIndex = 0;
             let supermarketRendered = false;
             let asianRendered = false;
+            let currencyRendered = false;
 
             const dateTabs = document.getElementById('dateTabs');
             const scheduleContainer = document.getElementById('scheduleView');
             const restaurantContainer = document.getElementById('restaurantView');
+            const currencyContainer = document.getElementById('currencyView');
             const asianRestaurantContainer = document.getElementById('asianRestaurantView');
             const supermarketContainer = document.getElementById('supermarketView');
+            
             const navSchedule = document.getElementById('nav-schedule');
             const navRestaurant = document.getElementById('nav-restaurant');
+            const navCurrency = document.getElementById('nav-currency');
             const navAsianFood = document.getElementById('nav-asianFood');
             const navSupermarket = document.getElementById('nav-supermarket');
 
             // Set up navigation event listeners
             document.getElementById('nav-schedule').addEventListener('click', () => switchView('schedule'));
             document.getElementById('nav-restaurant').addEventListener('click', () => switchView('restaurant'));
+            document.getElementById('nav-currency').addEventListener('click', () => switchView('currency'));
             document.getElementById('nav-asianFood').addEventListener('click', () => switchView('asianFood'));
             document.getElementById('nav-supermarket').addEventListener('click', () => switchView('supermarket'));
 
             function switchView(viewName) {
-                scheduleContainer.classList.add('hidden');
-                restaurantContainer.classList.add('hidden');
-                asianRestaurantContainer.classList.add('hidden');
-                supermarketContainer.classList.add('hidden');
+                // Hide all views
+                [scheduleContainer, restaurantContainer, currencyContainer, asianRestaurantContainer, supermarketContainer].forEach(el => el.classList.add('hidden'));
                 
-                navSchedule.classList.remove('nav-active'); navSchedule.classList.add('nav-inactive');
-                navRestaurant.classList.remove('nav-active'); navRestaurant.classList.add('nav-inactive');
-                navAsianFood.classList.remove('nav-active'); navAsianFood.classList.add('nav-inactive');
-                navSupermarket.classList.remove('nav-active'); navSupermarket.classList.add('nav-inactive');
+                // Deactivate all navs
+                [navSchedule, navRestaurant, navCurrency, navAsianFood, navSupermarket].forEach(el => {
+                    el.classList.remove('nav-active');
+                    el.classList.add('nav-inactive');
+                });
 
                 if (viewName === 'schedule') {
                     scheduleContainer.classList.remove('hidden');
@@ -384,6 +415,11 @@
                     restaurantContainer.classList.remove('hidden');
                     navRestaurant.classList.add('nav-active'); navRestaurant.classList.remove('nav-inactive');
                     dateTabs.classList.remove('hidden');
+                } else if (viewName === 'currency') {
+                    currencyContainer.classList.remove('hidden');
+                    navCurrency.classList.add('nav-active'); navCurrency.classList.remove('nav-inactive');
+                    dateTabs.classList.add('hidden');
+                    renderCurrency();
                 } else if (viewName === 'asianFood') {
                     asianRestaurantContainer.classList.remove('hidden');
                     navAsianFood.classList.add('nav-active'); navAsianFood.classList.remove('nav-inactive');
@@ -410,8 +446,8 @@
                 itinerary.forEach((item, index) => {
                     const btn = document.createElement('button');
                     const isActive = index === activeDayIndex;
-                    btn.className = `px-4 py-2 mx-1 text-sm whitespace-nowrap rounded-t-lg transition-all duration-200 ${isActive ? 'active-tab' : 'text-gray-500 hover:text-red-600'}`;
-                    btn.innerHTML = `<div class="font-bold">${item.date}</div><div class="text-xs">${item.day}</div>`;
+                    btn.className = `px-5 py-2 mx-1 text-sm whitespace-nowrap rounded-t-lg transition-all duration-200 focus:outline-none ${isActive ? 'active-tab' : 'text-gray-500 hover:text-red-600'}`;
+                    btn.innerHTML = `<div class="font-bold text-base">${item.date}</div><div class="text-xs uppercase">${item.day}</div>`;
                     btn.onclick = () => {
                         renderAll(index);
                         btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
@@ -427,26 +463,33 @@
             function renderSchedule(index) {
                 const data = itinerary[index];
                 scheduleContainer.innerHTML = `
-                    <div class="mb-4 animate-fade-in">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-1 pl-2 border-l-4 border-red-600">${data.city}</h2>
-                        <p class="text-sm text-gray-500 pl-3 mb-4">${data.date} (${data.day})</p>
+                    <div class="mb-5 animate-fade-in mt-2">
+                        <div class="flex items-center">
+                            <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-red-600 pl-3">${data.city}</h2>
+                            <span class="ml-3 bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full font-medium">${data.date}</span>
+                        </div>
                     </div>
                 `;
                 data.events.forEach(event => {
                     const card = document.createElement('div');
-                    card.className = "bg-white p-4 rounded-xl shadow-sm mb-4 border border-gray-100 day-card";
+                    card.className = "bg-white p-5 rounded-xl shadow-sm mb-4 border border-gray-100 interactive-card relative overflow-hidden";
                     card.innerHTML = `
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 w-12 text-center mr-3">
-                                <span class="block text-sm font-bold text-gray-600">${event.time}</span>
-                                <div class="mt-2 w-10 h-10 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center mx-auto">
-                                    <i class="fas ${event.icon}"></i>
+                        <div class="flex items-start z-10 relative">
+                            <div class="flex-shrink-0 w-14 text-center mr-4">
+                                <span class="block text-sm font-bold text-gray-500 font-mono">${event.time}</span>
+                                <div class="mt-2 w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto ring-4 ring-white shadow-sm">
+                                    <i class="fas ${event.icon} text-lg"></i>
                                 </div>
+                                <div class="h-full w-0.5 bg-gray-100 mx-auto mt-2 -mb-8"></div>
                             </div>
-                            <div class="flex-grow">
+                            <div class="flex-grow pb-2">
                                 <h3 class="font-bold text-lg text-gray-800 leading-tight mb-1">${event.title}</h3>
-                                <p class="text-sm text-gray-600 mb-2 leading-relaxed">${event.desc}</p>
-                                ${event.note ? `<div class="bg-red-50 p-2 rounded-lg border border-red-100 mt-2"><p class="text-xs text-red-800 flex items-start"><i class="fas fa-info-circle mt-0.5 mr-1.5 flex-shrink-0"></i><span>${event.note}</span></p></div>` : ''}
+                                <p class="text-sm text-gray-600 mb-3 leading-relaxed">${event.desc}</p>
+                                ${event.note ? `
+                                <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 mt-2 flex items-start">
+                                    <i class="fas fa-info-circle text-red-400 mt-0.5 mr-2 flex-shrink-0 text-sm"></i>
+                                    <p class="text-xs text-gray-600 leading-relaxed">${event.note}</p>
+                                </div>` : ''}
                             </div>
                         </div>
                     `;
@@ -457,45 +500,170 @@
             function renderRestaurants(index) {
                 const data = itinerary[index];
                 let content = `
-                    <div class="mb-4 animate-fade-in">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-1 pl-2 border-l-4 border-red-600">${data.date} 美食地圖</h2>
-                        <p class="text-sm text-gray-500 pl-3">點擊按鈕可直接導航</p>
+                    <div class="mb-5 animate-fade-in mt-2">
+                        <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-red-600 pl-3">美食地圖</h2>
+                        <p class="text-xs text-gray-500 pl-4 mt-1">點擊下方按鈕可直接導航</p>
                     </div>
                 `;
                 if (data.restaurants && data.restaurants.length > 0) {
                     data.restaurants.forEach(r => {
                         content += `
-                            <div class="bg-white p-4 rounded-xl shadow-sm mb-4 border border-gray-100 flex flex-col relative overflow-hidden">
+                            <div class="bg-white p-5 rounded-xl shadow-sm mb-4 border border-gray-100 flex flex-col relative overflow-hidden interactive-card">
                                 <div class="flex justify-between items-start mb-2">
-                                    <div>
-                                        <h3 class="font-bold text-lg text-gray-800 leading-tight">${r.name}</h3>
-                                        <div class="text-xs text-gray-500 mt-1 flex items-center">
-                                            <span class="bg-red-100 text-red-600 px-2 py-0.5 rounded mr-2">${r.type}</span>
-                                            <span class="mr-2"><i class="fas fa-coins text-yellow-500 text-xs"></i> ${r.price}</span>
-                                            <span><i class="fas fa-star text-yellow-400 text-xs"></i> ${r.rate}</span>
+                                    <div class="w-full">
+                                        <div class="flex justify-between items-start">
+                                            <h3 class="font-bold text-lg text-gray-800 leading-tight">${r.name}</h3>
+                                            <span class="bg-red-50 text-red-600 text-[10px] px-2 py-1 rounded-full font-bold whitespace-nowrap ml-2">${r.type}</span>
+                                        </div>
+                                        <div class="text-xs text-gray-500 mt-2 flex items-center space-x-3">
+                                            <span><i class="fas fa-coins text-yellow-500 mr-1"></i>${r.price}</span>
+                                            <span><i class="fas fa-star text-yellow-400 mr-1"></i>${r.rate}</span>
                                         </div>
                                     </div>
                                 </div>
-                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">${r.desc}</p>
-                                <a href="${r.url}" target="_blank" class="mt-auto w-full bg-red-600 text-white py-2 rounded-lg text-center font-medium text-sm hover:bg-red-700 transition flex items-center justify-center">
-                                    <i class="fas fa-location-arrow mr-2"></i> 導航去這裡
+                                <hr class="border-gray-50 my-2">
+                                <p class="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">${r.desc}</p>
+                                <a href="${r.url}" target="_blank" class="mt-auto w-full bg-white text-red-600 border border-red-200 py-2.5 rounded-lg text-center font-medium text-sm hover:bg-red-50 active:bg-red-100 transition flex items-center justify-center">
+                                    <i class="fas fa-location-arrow mr-2 text-red-500"></i> 導航去這裡
                                 </a>
                             </div>
                         `;
                     });
                 } else {
-                    content += `<div class="text-center py-10 text-gray-400"><i class="fas fa-utensils text-4xl mb-3"></i><p>本日以行程為主，建議周邊隨意覓食</p></div>`;
+                    content += `
+                        <div class="text-center py-16 text-gray-300 flex flex-col items-center">
+                            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                <i class="fas fa-utensils text-3xl text-gray-300"></i>
+                            </div>
+                            <p class="text-gray-400 font-medium">本日以行程為主</p>
+                            <p class="text-xs text-gray-400 mt-1">建議在景點周邊隨意覓食</p>
+                        </div>
+                    `;
                 }
-                content += `<div class="h-8"></div>`;
                 restaurantContainer.innerHTML = content;
+            }
+
+            function renderCurrency() {
+                if (currencyRendered) return;
+                
+                // Approximate Rates (Dec 2024 / Jan 2025 Context)
+                const RATE_PLN_TO_TWD = 8.05; // 1 PLN = 8.05 TWD
+                const RATE_PLN_TO_CZK = 5.85; // 1 PLN = 5.85 CZK
+                
+                const html = `
+                    <div class="mb-5 animate-fade-in mt-2">
+                        <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-red-600 pl-3">匯率換算</h2>
+                        <p class="text-xs text-gray-500 pl-4 mt-1">輸入任一欄位即可自動換算 (匯率僅供參考)</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
+                        <!-- PLN Input -->
+                        <div class="mb-5">
+                            <label class="block text-gray-600 text-sm font-bold mb-2 flex justify-between">
+                                <span>🇵🇱 波蘭茲羅提 (PLN)</span>
+                                <span class="text-red-500 text-xs">目前使用中</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-gray-400">zł</span>
+                                <input type="number" id="input-pln" inputmode="decimal" class="currency-input w-full bg-gray-50 text-gray-800 text-xl font-bold py-3 pl-10 pr-4 rounded-lg border border-gray-200 focus:outline-none focus:bg-white" placeholder="0">
+                            </div>
+                        </div>
+
+                        <!-- CZK Input -->
+                        <div class="mb-5">
+                            <label class="block text-gray-600 text-sm font-bold mb-2">🇨🇿 捷克克朗 (CZK)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-gray-400">Kč</span>
+                                <input type="number" id="input-czk" inputmode="decimal" class="currency-input w-full bg-gray-50 text-gray-800 text-xl font-bold py-3 pl-10 pr-4 rounded-lg border border-gray-200 focus:outline-none focus:bg-white" placeholder="0">
+                            </div>
+                        </div>
+
+                        <!-- TWD Input -->
+                        <div class="mb-2">
+                            <label class="block text-gray-600 text-sm font-bold mb-2">🇹🇼 新台幣 (TWD)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-gray-400">NT$</span>
+                                <input type="number" id="input-twd" inputmode="decimal" class="currency-input w-full bg-gray-50 text-gray-800 text-xl font-bold py-3 pl-12 pr-4 rounded-lg border border-gray-200 focus:outline-none focus:bg-white" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cheat Sheet -->
+                    <div class="mb-5 animate-fade-in">
+                        <h3 class="text-lg font-bold text-gray-700 mb-3 pl-2 border-l-4 border-gray-300">常用金額速查</h3>
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+                            <table class="min-w-full text-sm">
+                                <thead class="bg-gray-100 text-gray-600">
+                                    <tr>
+                                        <th class="py-3 px-4 text-left font-bold">PLN 🇵🇱</th>
+                                        <th class="py-3 px-4 text-left font-bold">TWD 🇹🇼</th>
+                                        <th class="py-3 px-4 text-left font-bold">CZK 🇨🇿</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr class="hover:bg-gray-50 transition"><td class="py-3 px-4 font-bold text-red-600">5 zł</td><td class="py-3 px-4">~ 40</td><td class="py-3 px-4">~ 29</td></tr>
+                                    <tr class="hover:bg-gray-50 transition"><td class="py-3 px-4 font-bold text-red-600">10 zł</td><td class="py-3 px-4">~ 81</td><td class="py-3 px-4">~ 59</td></tr>
+                                    <tr class="hover:bg-gray-50 transition"><td class="py-3 px-4 font-bold text-red-600">20 zł</td><td class="py-3 px-4">~ 161</td><td class="py-3 px-4">~ 117</td></tr>
+                                    <tr class="hover:bg-gray-50 transition"><td class="py-3 px-4 font-bold text-red-600">50 zł</td><td class="py-3 px-4">~ 403</td><td class="py-3 px-4">~ 293</td></tr>
+                                    <tr class="hover:bg-gray-50 transition"><td class="py-3 px-4 font-bold text-red-600">100 zł</td><td class="py-3 px-4">~ 805</td><td class="py-3 px-4">~ 585</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="text-[10px] text-gray-400 mt-2 text-center">* 匯率估算：1 PLN ≈ ${RATE_PLN_TO_TWD} TWD, 1 PLN ≈ ${RATE_PLN_TO_CZK} CZK</p>
+                    </div>
+                `;
+                currencyContainer.innerHTML = html;
+
+                // Bind Events
+                const inputPln = document.getElementById('input-pln');
+                const inputCzk = document.getElementById('input-czk');
+                const inputTwd = document.getElementById('input-twd');
+
+                function updateFromPln() {
+                    const pln = parseFloat(inputPln.value);
+                    if (!isNaN(pln)) {
+                        inputTwd.value = (pln * RATE_PLN_TO_TWD).toFixed(0);
+                        inputCzk.value = (pln * RATE_PLN_TO_CZK).toFixed(1);
+                    } else {
+                        inputTwd.value = ''; inputCzk.value = '';
+                    }
+                }
+
+                function updateFromCzk() {
+                    const czk = parseFloat(inputCzk.value);
+                    if (!isNaN(czk)) {
+                        const pln = czk / RATE_PLN_TO_CZK;
+                        inputPln.value = pln.toFixed(2);
+                        inputTwd.value = (pln * RATE_PLN_TO_TWD).toFixed(0);
+                    } else {
+                        inputPln.value = ''; inputTwd.value = '';
+                    }
+                }
+
+                function updateFromTwd() {
+                    const twd = parseFloat(inputTwd.value);
+                    if (!isNaN(twd)) {
+                        const pln = twd / RATE_PLN_TO_TWD;
+                        inputPln.value = pln.toFixed(2);
+                        inputCzk.value = (pln * RATE_PLN_TO_CZK).toFixed(1);
+                    } else {
+                        inputPln.value = ''; inputCzk.value = '';
+                    }
+                }
+
+                inputPln.addEventListener('input', updateFromPln);
+                inputCzk.addEventListener('input', updateFromCzk);
+                inputTwd.addEventListener('input', updateFromTwd);
+                
+                currencyRendered = true;
             }
 
             function renderAsianFood() {
                 if (asianRendered) return;
                 let content = `
-                    <div class="mb-4 animate-fade-in">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-1 pl-2 border-l-4 border-red-600">亞洲美食地圖</h2>
-                        <p class="text-sm text-gray-500 pl-3">想念亞洲味時的救星 (Google 評論 >1000)</p>
+                    <div class="mb-5 animate-fade-in mt-2">
+                        <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-red-600 pl-3">亞洲美食地圖</h2>
+                        <p class="text-xs text-gray-500 pl-4 mt-1">想念亞洲味時的救星 (Google 評論 >1000)</p>
                     </div>
                 `;
                 
@@ -503,28 +671,33 @@
                 asianRestaurants.forEach(item => {
                     if (item.city !== currentCity) {
                         currentCity = item.city;
-                        content += `<h3 class="text-lg font-bold text-gray-700 mt-6 mb-2 pl-2 border-l-2 border-red-400">${currentCity}</h3>`;
+                        content += `
+                            <div class="sticky top-[105px] z-20 bg-gray-50/95 backdrop-blur py-2 mb-2">
+                                <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider pl-1 flex items-center">
+                                    <i class="fas fa-map-marker-alt mr-2 text-red-400"></i>${currentCity}
+                                </h3>
+                            </div>
+                        `;
                     }
 
                     content += `
-                        <div class="bg-white p-4 rounded-xl shadow-sm mb-4 border border-gray-100 flex flex-col relative overflow-hidden">
+                        <div class="bg-white p-5 rounded-xl shadow-sm mb-4 border border-gray-100 flex flex-col relative overflow-hidden interactive-card">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <h3 class="font-bold text-lg text-gray-800 leading-tight">${item.name}</h3>
-                                    <div class="text-xs mt-1 flex flex-wrap gap-2">
-                                        <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold">${item.cuisine}</span>
-                                        <span class="text-gray-500 flex items-center"><i class="fas fa-star text-yellow-400 text-xs mr-1"></i> ${item.rate}</span>
+                                    <div class="text-xs mt-2 flex flex-wrap gap-2">
+                                        <span class="bg-blue-50 text-blue-600 px-2 py-1 rounded font-medium">${item.cuisine}</span>
+                                        <span class="text-gray-500 flex items-center px-1"><i class="fas fa-star text-yellow-400 text-xs mr-1"></i> ${item.rate}</span>
                                     </div>
                                 </div>
                             </div>
-                            <p class="text-sm text-gray-600 mb-3 leading-relaxed">${item.desc}</p>
-                            <a href="${item.url}" target="_blank" class="mt-auto w-full bg-red-600 text-white py-2 rounded-lg text-center font-medium text-sm hover:bg-red-700 transition flex items-center justify-center">
+                            <p class="text-sm text-gray-600 mb-4 leading-relaxed border-t border-gray-50 pt-2 mt-1">${item.desc}</p>
+                            <a href="${item.url}" target="_blank" class="mt-auto w-full bg-red-600 text-white py-2.5 rounded-lg text-center font-medium text-sm hover:bg-red-700 active:bg-red-800 transition shadow-sm flex items-center justify-center">
                                 <i class="fas fa-location-arrow mr-2"></i> 導航去這裡
                             </a>
                         </div>
                     `;
                 });
-                content += `<div class="h-8"></div>`;
                 asianRestaurantContainer.innerHTML = content;
                 asianRendered = true;
             }
@@ -532,37 +705,40 @@
             function renderSupermarkets() {
                 if (supermarketRendered) return;
                 let content = `
-                    <div class="mb-4 animate-fade-in">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-1 pl-2 border-l-4 border-red-600">亞洲超市指南</h2>
-                        <p class="text-sm text-gray-500 pl-3">波蘭精選高評價亞超 (Google 4.5星+)</p>
+                    <div class="mb-5 animate-fade-in mt-2">
+                        <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-red-600 pl-3">亞洲超市指南</h2>
+                        <p class="text-xs text-gray-500 pl-4 mt-1">波蘭精選高評價亞超 (Google 4.5星+)</p>
                     </div>
                 `;
                 polishSupermarkets.forEach(item => {
                     content += `
-                        <div class="bg-white p-4 rounded-xl shadow-sm mb-4 border border-gray-100 flex flex-col relative overflow-hidden">
+                        <div class="bg-white p-5 rounded-xl shadow-sm mb-4 border border-gray-100 flex flex-col relative overflow-hidden interactive-card">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <h3 class="font-bold text-lg text-gray-800 leading-tight">${item.name}</h3>
-                                    <div class="text-xs mt-1 flex flex-wrap gap-2">
+                                    <div class="text-xs mt-2 flex flex-wrap gap-2">
                                         <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">${item.type}</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="bg-gray-50 p-2 rounded-lg border border-gray-100 my-2">
-                                <p class="text-xs text-gray-700 font-bold flex items-start"><i class="fas fa-info-circle mt-0.5 mr-1.5 flex-shrink-0"></i><span>${item.note}</span></p>
+                            <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-100 my-3">
+                                <p class="text-xs text-yellow-800 font-medium flex items-start leading-relaxed">
+                                    <i class="fas fa-lightbulb mt-0.5 mr-2 flex-shrink-0"></i>
+                                    <span>${item.note}</span>
+                                </p>
                             </div>
-                            <p class="text-sm text-gray-600 mb-3 leading-relaxed">${item.desc}</p>
-                            <a href="${item.url}" target="_blank" class="mt-auto w-full bg-red-600 text-white py-2 rounded-lg text-center font-medium text-sm hover:bg-red-700 transition flex items-center justify-center shadow-md">
-                                <i class="fas fa-search mr-2"></i> 搜尋這家店
+                            <p class="text-sm text-gray-600 mb-4 leading-relaxed">${item.desc}</p>
+                            <a href="${item.url}" target="_blank" class="mt-auto w-full bg-white text-gray-700 border border-gray-200 py-2.5 rounded-lg text-center font-medium text-sm hover:bg-gray-50 active:bg-gray-100 transition shadow-sm flex items-center justify-center">
+                                <i class="fab fa-google mr-2 text-blue-500"></i> 搜尋這家店
                             </a>
                         </div>
                     `;
                 });
-                content += `<div class="h-8"></div>`;
                 supermarketContainer.innerHTML = content;
                 supermarketRendered = true;
             }
 
+            // Initialize
             renderAll(0);
         });
     </script>
